@@ -1,0 +1,48 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ClaimSafe campus lost-property claims and secure collection.">
+  <title>{% block title %}ClaimSafe | Campus lost property{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link rel="stylesheet" href="{% static 'app.css' %}">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar">
+  <a class="brand" href="{% url 'home' %}"><span class="brand-mark">C<span>✓</span></span>ClaimSafe<span class="brand-dot">.</span></a>
+  <div class="workspace-label">CAMPUS PROPERTY DESK</div>
+  <nav aria-label="Main navigation">
+    <a class="nav-link {% if section == 'home' or section == 'item_detail' %}active{% endif %}" href="{% url 'home' %}"><span class="nav-icon">⌕</span>Find your belongings</a>
+    {% if user.is_authenticated %}
+    <a class="nav-link {% if section == 'dashboard' or section == 'claim_detail' %}active{% endif %}" href="{% url 'dashboard' %}"><span class="nav-icon">▤</span>My claims</a>
+    {% endif %}
+    {% if user.is_officer %}
+    <div class="nav-divider">PROPERTY OPERATIONS</div>
+    <a class="nav-link {% if section == 'staff_queue' %}active{% endif %}" href="{% url 'staff_queue' %}"><span class="nav-icon">▦</span>Review desk</a>
+    <a class="nav-link {% if section == 'item_new' %}active{% endif %}" href="{% url 'item_new' %}"><span class="nav-icon">＋</span>Record found item</a>
+    {% endif %}
+    {% if user.is_administrator %}
+    <div class="nav-divider">ADMINISTRATION</div>
+    <a class="nav-link {% if section == 'audit' %}active{% endif %}" href="{% url 'audit' %}"><span class="nav-icon">◷</span>Security activity</a>
+    <a class="nav-link {% if section == 'users' %}active{% endif %}" href="{% url 'users' %}"><span class="nav-icon">♙</span>Account access</a>
+    {% endif %}
+    <a class="nav-link {% if section == 'privacy' %}active{% endif %}" href="{% url 'privacy' %}"><span class="nav-icon">◇</span>Privacy & safe use</a>
+  </nav>
+  <div class="sidebar-bottom"><div class="shield-mark">✓</div><strong>A little less lost.</strong><p>Private claims.<br>Thoughtful handovers.</p><span class="prototype-label">COURSEWORK PROTOTYPE</span></div>
+</aside>
+<div class="app-shell">
+  <header class="topbar"><span class="breadcrumb">Campus services <span>/</span> Lost property</span><div class="account-tools">
+    {% if user.is_authenticated %}<div class="account"><span class="avatar">{{ user.username|first|upper }}</span><span><strong>{{ user.username }}</strong><small>{{ user.get_role_display }}</small></span></div><form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="text-button" type="submit">Sign out</button></form>
+    {% else %}<a class="text-link" href="{% url 'login' %}">Sign in</a><a class="button small" href="{% url 'register' %}">Create account <span>↗</span></a>{% endif %}
+  </div></header>
+  <main id="main" tabindex="-1">
+    {% for message in messages %}<div class="notice {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer><span>ClaimSafe · Campus lost property</span><span>Local prototype. Please use fictional data.</span></footer>
+</div>
+</body>
+</html>

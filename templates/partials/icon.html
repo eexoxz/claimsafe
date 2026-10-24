@@ -1,0 +1,11 @@
+<svg class="item-icon" viewBox="0 0 120 100" fill="none" aria-hidden="true">
+{% if category == 'electronics' %}
+<path d="M32 54V44a28 28 0 0 1 56 0v10" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><rect x="23" y="48" width="17" height="31" rx="8" fill="currentColor"/><rect x="80" y="48" width="17" height="31" rx="8" fill="currentColor"/><path d="M88 80c0 9-12 12-25 12" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+{% elif category == 'books' %}
+<rect x="33" y="15" width="58" height="74" rx="8" stroke="currentColor" stroke-width="4"/><path d="M45 16v72M56 35h23M56 45h17" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="m22 25 9-3v65l-9-2V25Z" fill="currentColor" opacity=".25"/>
+{% elif category == 'accessories' %}
+<rect x="25" y="28" width="70" height="53" rx="12" stroke="currentColor" stroke-width="4"/><path d="M26 42h68M45 27v-8h30v8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="57" r="5" fill="currentColor"/>
+{% else %}
+<path d="M39 32h42l8 53H31l8-53Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M47 34V24a13 13 0 0 1 26 0v10" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M49 52v16M71 52v16" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+{% endif %}
+</svg>

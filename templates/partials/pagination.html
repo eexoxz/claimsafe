@@ -1,0 +1,5 @@
+{% if page.has_other_pages %}<nav class="pagination" aria-label="Results pages">
+{% if page.has_previous %}<a href="?page={{ page.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}{% if category %}&category={{ category|urlencode }}{% endif %}{% if status %}&status={{ status|urlencode }}{% endif %}{% if outcome %}&outcome={{ outcome|urlencode }}{% endif %}">← Previous</a>{% endif %}
+<span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+{% if page.has_next %}<a href="?page={{ page.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}{% if category %}&category={{ category|urlencode }}{% endif %}{% if status %}&status={{ status|urlencode }}{% endif %}{% if outcome %}&outcome={{ outcome|urlencode }}{% endif %}">Next →</a>{% endif %}
+</nav>{% endif %}
