@@ -51,5 +51,8 @@ uploads, image matching, payments, delivery, live university identity provider o
 5. Capture authentic evidence and write the 3,200-4,800-word report against the 2026 rubric.
 6. Complete the declarations, Canvas submission and viva preparation.
 
+Report preparation follows [the writing guide](REPORT_WRITING_GUIDE.md) and
+[the report plan](REPORT_PLAN.md), using the user's established academic writing preferences.
+
 The brief calls this a group project; the student should verify acceptance of solo work.
 No score or distinction is guaranteed by choosing this topic.

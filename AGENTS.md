@@ -10,5 +10,8 @@
 - Use ordinary project filenames and clear commit messages. Do not create empty commits.
 - Keep security decisions and actual verification results accurate. Do not claim that
   unperformed testing or deployment work is complete.
+- For report work, follow `docs/REPORT_WRITING_GUIDE.md` and `docs/REPORT_PLAN.md`. Preserve
+  the user's established plain, connected academic prose and distinguish actual evidence
+  from demonstration data and planned work. The 2026 coursework brief governs the structure.
 - At handoff, briefly state what changed, what was checked, the local commit identifier,
   and how to run or access the result when relevant.
