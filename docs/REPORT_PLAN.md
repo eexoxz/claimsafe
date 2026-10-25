@@ -19,7 +19,7 @@ do not assume they are excluded simply because an older report treated them that
 | 2. Security analysis and design | 900 | Analyse application-specific threats and justify the controls and trust boundaries |
 | 3. Security implementation and testing | 1,850 | Explain actual code/configuration and evaluate it using authentic evidence |
 | 4. Discussion and improvement | 650 | Evaluate effectiveness, challenges, remaining risks and prioritised improvements |
-| 5. Summary | 250 | Address objectives and learning outcomes using findings already established |
+| 5. Conclusion | 250 | Address objectives and learning outcomes using findings already established |
 | Total | 4,000 | Research and citations are integrated into the relevant explanations |
 
 Provide references, required declarations and an appropriate appendix according to the
@@ -92,7 +92,7 @@ while still only planned. Other candidates include privileged-account MFA, safer
 recovery, external audit protection, alerting, retention/deletion procedures, backup recovery
 and tested key rotation. Explain benefit and implementation impact rather than listing names.
 
-## 5. Summary
+## 5. Conclusion
 
 Return to the stated objectives and assessed learning outcomes. Summarise the demonstrated
 behaviour and its practical limits without introducing new controls, results or citations

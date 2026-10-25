@@ -20,6 +20,16 @@ not a finished report or a record of tests that have not yet happened.
 
 ## Words, sentences and paragraphs
 
+The user's later presentation reference is their own FYP report supplied on 26 October 2026.
+The ClaimSafe report should be a formal assignment in editable Word and matching PDF:
+A4 portrait, one-inch margins, Times New Roman 12 pt, 1.5 body spacing, justified paragraphs,
+numbered chapters and subsections, contents, caption lists and centred page numbers.
+Use Roman preliminary numbering and Arabic body numbering. Follow the security coursework's
+content rather than copying the FYP's seven chapters or its subject matter. Plain tables
+may summarise genuine comparisons and evidence; do not turn narrative into a workbook.
+Keep development instructions, submission reminders and advice addressed to the student in
+separate project documentation. Retain a factual AI acknowledgement in the report itself.
+
 Use direct, familiar academic language. Choose a precise technical term when the term is
 needed, explain it on first use, and connect it to what actually happens in ClaimSafe. Prefer
 “uses”, “checks” and “prevents this request” to inflated wording such as “leverages”, “robust

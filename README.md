@@ -41,16 +41,19 @@ The full report source is in [docs/REPORT_DRAFT.md](docs/REPORT_DRAFT.md), with 
 figures and an actual test summary in `docs/report-assets/`. The draft covers the verified
 local implementation and explicitly identifies unfinished deployment and assessment work.
 
-To regenerate the PDF on a machine with the optional report dependencies installed:
+To regenerate the editable Word document with the optional report dependencies installed:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements-report.txt
 .\.venv\Scripts\python.exe scripts/build_report.py
 ```
 
-This writes a PDF, an editable Markdown copy and supporting figures to `.local/report/`.
-The PDF includes an automatically populated contents page. Its source evidence and conclusions
-must be updated when the implementation or verification results change.
+This writes a DOCX, a Markdown copy and supporting figures to `.local/report/`.
+On Windows with Microsoft Word installed, add `--export-pdf` to refresh the contents,
+caption lists and page numbers and export a matching PDF from the saved DOCX.
+The reviewed Word and PDF versions are stored in `docs/report/`.
+See [report production notes](docs/REPORT_BUILD.md) for formatting and evidence details.
+The source evidence and conclusions must be updated when implementation or verification changes.
 
 ## Academic ownership
 
@@ -63,5 +66,6 @@ the behaviours they actually exercise; they do not certify complete security.
 ## Current boundary
 
 This is a local prototype. HTTPS deployment, certificate validation, deployment hardening,
-manual vulnerability assessment, automated scanning, and the coursework report must be
-completed and evidenced before treating the assignment as finished. See the project plan.
+manual vulnerability assessment and automated scanning must be completed and evidenced,
+then reflected in the coursework report, before treating the assignment as finished.
+See the project plan.

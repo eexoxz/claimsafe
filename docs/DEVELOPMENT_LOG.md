@@ -54,3 +54,32 @@ Codex (OpenAI) assisted with planning, implementation, tests, documentation and 
 The student must review the code, personalise the decisions, understand the security rules,
 and acknowledge assistance according to the assignment's Generative AI declaration.
 No prior student report, code, diagram, test result or screenshot was copied into the repository.
+
+### 2026-10-26 formal report revision
+
+Revised the report after the user supplied their own FYP document as a presentation and
+writing reference. The coursework retains five security chapters, now numbered with their
+subsections. The body uses Times New Roman 12 pt, 1.5 line spacing, justified text, A4 pages
+and one-inch margins. An abstract, updated contents, caption lists and Roman/Arabic page
+numbering provide the formal assignment structure. Reworked 22 substantive paragraphs,
+reduced repeated qualifications, and separated submission guidance from report content.
+The factual AI acknowledgement remains in the report.
+
+The reviewed report has 21 pages, four figures and three tables. Its main text is approximately
+3,888 words; the complete Markdown source is approximately 4,550 words under the same token
+counting method. These counts describe the files rather than deciding the module's counting
+rules. The PDF was exported directly from the saved DOCX using Microsoft Word, including live
+contents and caption-field refresh. All 21 pages were inspected as 140 dpi images. After the
+final code-line wrapping, pages 1-20 were pixel-identical and page 21 was reviewed again.
+The original FYP reference remained byte-for-byte unchanged. Checks found no old tourism
+content, unresolved fields or incorrect extra table caption in the delivered report.
+
+All 45 application tests passed again in 20.056 seconds on 26 October, using the separate
+SQLite test database. The rerun summary is recorded separately from the previous day's run.
+No application features were changed for this revision. The report continues to distinguish
+regression tests and fictional browser evidence from the outstanding HTTPS deployment,
+host hardening and complete manual/automated vulnerability assessment.
+
+Versioned Word and PDF copies are under `docs/report/`; text, sanitised template and builder
+remain editable in the repository. Production instructions and submission reminders are in
+`REPORT_BUILD.md`, outside the formal report. Local version control only; no remote push.
