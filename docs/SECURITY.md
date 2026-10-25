@@ -1,5 +1,9 @@
 # Security design and evidence boundaries
 
+Account MFA, saved-code recovery and offline backup/key maintenance are detailed in
+[Account security and recovery](ACCOUNT_SECURITY_AND_RECOVERY.md), with current results
+in `security-evidence/account-recovery/`. The earlier scanner evidence remains revision-specific.
+
 ## Trust model
 
 The browser is untrusted. Roles, ownership, approval state and collection state come from
@@ -18,6 +22,8 @@ views. No application endpoint edits or deletes audit records or changes account
 | Public listing leaks withheld information | Separate public fields; no public serializer for private fields | Public page tests inspect response content |
 | Claim disclosure across accounts | Ownership-scoped retrieval; staff role checks | Cross-account 404 test, role-denial tests |
 | Login attacks | Django password hashing; persistent username/IP keyed rate counters; generic failures | Hash verification, rate-limit tests |
+| Staff password compromise | Mandatory TOTP/recovery-code second factor; encrypted session-bound setup; consumed-counter rejection | Account-security tests including a real concurrent TOTP race; selected real HTTPS checks |
+| Account lockout | Single-use high-entropy recovery-code digests; full reset invalidates other codes/sessions and cannot reactivate suspended users | Recovery, session invalidation and inactive-account tests |
 | Session fixation or stale sessions | Django session rotation at login, logout invalidation, 30-minute idle cookie lifetime and 8-hour absolute ceiling | Session rotation/logout/age tests |
 | Role escalation | Explicit registration allowlist and forced student role; CLI staff provisioning | Privileged field injection test |
 | SQL injection | Django ORM queries with parameter binding; no raw SQL built from user inputs | Search injection regression test (limited scope) |
@@ -29,6 +35,8 @@ views. No application endpoint edits or deletes audit records or changes account
 | Duplicate handover | Conditional token consumption and state changes in one SQLite IMMEDIATE transaction | Actual two-thread test on a file-backed test database |
 | Misuse by property staff | No self-review or self-handover; evidence access audit events | Self-review and evidence-access tests |
 | Inactive accounts | Authentication backend rejects deactivated users, including existing sessions | Existing-session deactivation test |
+| Lost database/key mismatch | Authenticated independent-key snapshots containing matching database/key ring; restore into a new profile only | Wrong-key/tamper/no-overwrite tests and isolated real restore |
+| Unsafe field-key retirement | Profile lease, verified pre-change backup, transactional rotation, primary-only verification before retirement | Failure rollback test, cross-process lease check and fresh-app decrypt checks |
 
 No application audit event includes claim evidence, identifying item details, passwords,
 email addresses or collection codes. It does include user references, action names, target

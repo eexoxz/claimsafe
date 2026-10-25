@@ -117,3 +117,36 @@ backend boundary, credential removal before app/error logging, Host rejection an
 length. This timing is not a performance benchmark. Technical notes and redacted evidence are
 under `docs/DEPLOYMENT.md`, `docs/SECURITY_ASSESSMENT.md` and `docs/security-evidence/`.
 The report sources, builders, assets and reviewed Word/PDF are unchanged from 29b2bde.
+
+### 2026-10-26 account security and offline recovery
+
+Continued the user's authorised application work while preserving the report freeze. Added
+mandatory officer/administrator TOTP, optional student enrolment, locally generated QR codes,
+encrypted/browser-bound ten-minute pending setup, single-use counter updates and saved
+128-bit recovery codes stored as digests. Account password changes and saved-code recovery
+invalidate older sessions; full recovery resets the factor and remaining codes without
+reactivating suspended accounts. Security views require HTTPS and CSRF protection, have
+account/network throttles, and exclude secrets from audit events. Real operator/demo factors
+remain unenrolled for the user to add with their own authenticator.
+
+Added offline independent-key encrypted snapshots, non-overwriting restoration, transactional
+MultiFernet rotation and verified fallback retirement. WSGI/preparation/maintenance share a
+profile lease. Restoration revokes sessions, collection grants, saved recovery codes and
+pending enrolments, regenerates signing/proxy secrets and requires operator reconciliation
+of later account/custody changes. Added expired transient-state pruning and named HTTPS
+profiles without seeding restored data. Windows testing exposed unclosed SQLite connections
+and explicit directory ACL grants; corrected both and reran affected checks.
+
+All 83 regression tests passed in 39.206 seconds. Nineteen selected real HTTPS account checks
+passed with project-CA/hostname validation. An isolated real snapshot verified 24 encrypted
+values; rotation and retirement preserved their decrypted content after fresh app starts.
+Source database/keys stayed unchanged and the original six items/two claims still decrypted.
+The normal HTTPS profile was prepared and four public pages returned 200/no-store under
+validated TLS. Twelve installed app packages had no known pip-audit advisories. Bandit's
+twelve retained findings were reviewed: empty reset values, fixed/no-shell offline process
+calls, and the earlier fixed HTTPS/checksummed downloader. No ZAP/SSLyze rerun or independent
+user study is claimed for this phase. Redacted evidence is separate from the older assessment.
+
+Windows/browser trust, the user's authenticator enrolment, off-device backup/key custody,
+operator identity/retention decisions and any public institutional hosting remain user-owned
+steps. Report files/builders/exports retain their frozen revision. Local commit only; no push.

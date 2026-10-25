@@ -1,7 +1,13 @@
 from django.urls import path
 from . import views
+from . import account_views
 
 urlpatterns = [
+    path("account/security/", account_views.account_security, name="account_security"),
+    path("account/password/", account_views.password_change, name="password_change"),
+    path("account/recover/", account_views.account_recovery, name="account_recovery"),
+    path("account/verify/", account_views.mfa_challenge, name="mfa_challenge"),
+    path("account/authenticator/", account_views.mfa_setup, name="mfa_setup"),
     path("", views.home, name="home"),
     path("register/", views.register, name="register"),
     path("login/", views.sign_in, name="login"),

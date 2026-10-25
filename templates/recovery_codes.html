@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Save your recovery codes | ClaimSafe{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow muted">SAVE THESE PRIVATELY</div><h1>Your recovery codes.</h1><p>These codes are shown only on this response. Each code can be used once. Previous sets have been invalidated.</p></div></div>
+<section class="prose panel"><p>Save a copy outside this browser, somewhere only you control. A recovery code can restore access to your account. Do not put the codes in your report or share them with property staff.</p><ul class="recovery-code-list">{% for code in codes %}<li><code>{{ code }}</code></li>{% endfor %}</ul><p>If a code is used for full account recovery, all the other codes are invalidated and authenticator setup must be completed again.</p><a class="button" href="{% url 'account_security' %}">I have saved the codes</a></section>
+{% endblock %}

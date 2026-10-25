@@ -22,6 +22,10 @@ The new profile has its own fictional demonstration accounts and database. Its c
 are in `.local/https/demo-accounts.txt`. The earlier HTTP demo under `.local/` is preserved.
 `-Assessment` selects a separate `.local/https-assessment/` profile for security probes.
 `-PrepareOnly` provisions and validates the selected profile without starting the servers.
+`-ProfileName restored-demo` selects another named profile under `.local/`, including a
+restored snapshot. Preparation holds the profile lease and does not seed a restored profile.
+Staff now require authenticator enrolment over HTTPS. See
+[account security and recovery](ACCOUNT_SECURITY_AND_RECOVERY.md) before signing in or restoring.
 
 ## Certificate trust
 

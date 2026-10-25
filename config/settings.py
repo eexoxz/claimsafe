@@ -16,6 +16,7 @@ except FileNotFoundError:
 
 SECRET_KEY = os.environ.get("CLAIMSAFE_SECRET_KEY") or LOCAL_SECRETS.get("secret_key")
 FIELD_ENCRYPTION_KEY = os.environ.get("CLAIMSAFE_ENCRYPTION_KEY") or LOCAL_SECRETS.get("encryption_key")
+FIELD_ENCRYPTION_FALLBACK_KEYS = [] if os.environ.get("CLAIMSAFE_ENCRYPTION_KEY") else LOCAL_SECRETS.get("retired_encryption_keys", [])
 if not SECRET_KEY or not FIELD_ENCRYPTION_KEY:
     raise ImproperlyConfigured("Run python scripts/initialize.py to create local secrets first.")
 
@@ -41,6 +42,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "core.middleware.SessionBoundaryMiddleware",
+    "core.middleware.MFABoundaryMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]

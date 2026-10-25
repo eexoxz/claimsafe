@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Account security | ClaimSafe{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow muted">YOUR ACCOUNT</div><h1>Keep your account yours.</h1><p>Manage your password, authenticator and saved recovery codes.</p></div></div>
+<div class="claim-layout"><section class="prose panel"><h2>Authenticator</h2>{% if state.enabled %}<p>Your authenticator is enabled. After entering your password, use a fresh authenticator code or an unused recovery code to finish signing in.</p>{% else %}<p>No authenticator is set up. Adding one gives your account a second check after your password.</p><a class="button" href="{% url 'mfa_setup' %}">Set up authenticator</a>{% endif %}
+<h2>Password</h2><p>Use a unique password with at least fifteen characters. You will need your current password to change it.</p><a class="button secondary" href="{% url 'password_change' %}">Change password</a>
+<h2>If your authenticator is lost</h2><p>Use an unused recovery code at sign in. To replace a lost authenticator, recover the account with a saved code and a new password, then set up your replacement device. Recovery invalidates the other saved codes.</p><a href="{% url 'account_recovery' %}">Recover account</a></section>
+<aside class="panel"><h2>Saved recovery codes</h2><p>{{ remaining_codes }} unused code{{ remaining_codes|pluralize }} remaining. Codes are shown only when created. Keep a copy somewhere private outside this browser.</p><p>Creating a new set invalidates the old set{% if state.enabled %} and requires a fresh authenticator or unused recovery code{% endif %}.</p><form method="post">{% csrf_token %}{% include 'partials/fields.html' %}<button class="button full-width" type="submit">Create new recovery codes</button></form></aside></div>
+{% endblock %}

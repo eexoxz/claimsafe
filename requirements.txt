@@ -1,2 +1,4 @@
 Django>=5.2,<5.3
 cryptography>=50,<51
+pyotp>=2.10,<3
+qrcode>=8.2,<9

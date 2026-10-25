@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Set up your authenticator | ClaimSafe{% endblock %}
+{% block content %}
+<div class="form-layout"><section class="form-intro"><div class="eyebrow muted">ACCOUNT SECURITY</div><h1>Protect your sign in.</h1><p>Property officers and administrators need an authenticator before opening private records. Students can add one too.</p><p>Your setup key is private. Keep it out of screenshots and only add it to an authenticator you control.</p></section>
+<section class="panel form-panel">
+{% if setup_secret %}
+<h2>Add ClaimSafe to your authenticator</h2><p>Scan this QR code, or enter the setup key manually. Choose a time-based six-digit code if your app asks.</p>
+<img class="authenticator-qr" src="{{ qr }}" width="220" height="220" alt="Private authenticator setup QR code">
+<div class="token-box"><strong>Manual setup key</strong><code>{{ setup_secret }}</code><small>This setup expires after ten minutes.</small></div>
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="confirm">{% include 'partials/fields.html' with form=confirm_form %}<button class="button full-width" type="submit">Confirm authenticator</button></form>
+{% else %}<h2>Confirm your password first</h2><form method="post">{% csrf_token %}<input type="hidden" name="action" value="start">{% include 'partials/fields.html' with form=start_form %}<button class="button full-width" type="submit">Create setup key</button></form>{% endif %}
+</section></div>
+{% endblock %}

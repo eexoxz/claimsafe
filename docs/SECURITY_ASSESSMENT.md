@@ -1,5 +1,11 @@
 # Local security assessment 26 October 2026
 
+**Recorded scope:** the assessment below describes `5339995` and its historical manifest.
+Later account security and recovery changes are documented in
+[Account security and recovery](ACCOUNT_SECURITY_AND_RECOVERY.md) with separate evidence
+under `security-evidence/account-recovery/`. References below to absent MFA/backup/rotation
+describe that earlier revision. Do not treat its test count or hashes as the current build.
+
 These are development evidence notes, separate from the frozen assignment report. The report
 at 29b2bde has not been edited or regenerated. The new application source and evidence hashes
 are recorded in `security-evidence/manifest.json`; the local commit identifies the completed

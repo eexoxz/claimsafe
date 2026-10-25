@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}Account recovery | ClaimSafe{% endblock %}
+{% block content %}
+<section class="prose panel"><h1>Check your sign in.</h1><p>If the username and saved recovery code were valid, your new password is ready and the old authenticator and recovery codes have been replaced.</p><p>Sign in with your new password. Property staff must set up an authenticator before opening private records. If you cannot recover the account, contact the local operator.</p><a class="button" href="{% url 'login' %}">Go to sign in</a></section>
+{% endblock %}

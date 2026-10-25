@@ -1,0 +1,108 @@
+{
+  "tool": "Bandit 1.9.4",
+  "scope": "core and config excluding tests; initializer, WSGI runner, deployment checks, downloader, data maintenance and profile preparation. Frozen report builders excluded.",
+  "raw_result_sha256": "2d4e6f69b923358e33e5b2b5e39b46658580c5eadf84e7dc33f4ebc5f1001b4e",
+  "findings": [
+    {
+      "test_id": "B310",
+      "issue_severity": "MEDIUM",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/install_caddy.py",
+      "line_number": 15,
+      "issue_text": "Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected."
+    },
+    {
+      "test_id": "B404",
+      "issue_severity": "LOW",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/manage_data.py",
+      "line_number": 14,
+      "issue_text": "Consider possible security implications associated with the subprocess module."
+    },
+    {
+      "test_id": "B603",
+      "issue_severity": "LOW",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/manage_data.py",
+      "line_number": 38,
+      "issue_text": "subprocess call - check for execution of untrusted input."
+    },
+    {
+      "test_id": "B603",
+      "issue_severity": "LOW",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/manage_data.py",
+      "line_number": 45,
+      "issue_text": "subprocess call - check for execution of untrusted input."
+    },
+    {
+      "test_id": "B603",
+      "issue_severity": "LOW",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/manage_data.py",
+      "line_number": 46,
+      "issue_text": "subprocess call - check for execution of untrusted input."
+    },
+    {
+      "test_id": "B404",
+      "issue_severity": "LOW",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/prepare_profile.py",
+      "line_number": 4,
+      "issue_text": "Consider possible security implications associated with the subprocess module."
+    },
+    {
+      "test_id": "B603",
+      "issue_severity": "LOW",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/prepare_profile.py",
+      "line_number": 24,
+      "issue_text": "subprocess call - check for execution of untrusted input."
+    },
+    {
+      "test_id": "B105",
+      "issue_severity": "LOW",
+      "issue_confidence": "MEDIUM",
+      "filename": "core\\account_security.py",
+      "line_number": 120,
+      "issue_text": "Possible hardcoded password: ''"
+    },
+    {
+      "test_id": "B105",
+      "issue_severity": "LOW",
+      "issue_confidence": "MEDIUM",
+      "filename": "core\\account_security.py",
+      "line_number": 185,
+      "issue_text": "Possible hardcoded password: ''"
+    },
+    {
+      "test_id": "B105",
+      "issue_severity": "LOW",
+      "issue_confidence": "MEDIUM",
+      "filename": "core\\account_security.py",
+      "line_number": 186,
+      "issue_text": "Possible hardcoded password: ''"
+    },
+    {
+      "test_id": "B105",
+      "issue_severity": "LOW",
+      "issue_confidence": "MEDIUM",
+      "filename": "core\\account_views.py",
+      "line_number": 102,
+      "issue_text": "Possible hardcoded password: ''"
+    },
+    {
+      "test_id": "B106",
+      "issue_severity": "LOW",
+      "issue_confidence": "MEDIUM",
+      "filename": "core\\management\\commands\\prune_security_state.py",
+      "line_number": 26,
+      "issue_text": "Possible hardcoded password: ''"
+    }
+  ],
+  "review": {
+    "B310": "Fixed publisher HTTPS URL with pinned SHA-512 verification in the Caddy downloader, reviewed in the earlier assessment.",
+    "B105/B106": "Empty strings clearing/resetting authenticator setup fields and local display variables, not hardcoded usable secrets.",
+    "B404/B603": "Reviewed offline tools: shell=False, fixed System32 whoami/icacls paths with explicit argv, and current sys.executable with fixed project preparation commands. No request-controlled executable or shell string. CLI paths are operator-selected local paths. These generic subprocess findings are retained rather than globally suppressed."
+  }
+}

@@ -34,8 +34,8 @@ All state changes are server-side and cannot be selected in a browser form.
 | Secure communication | Local Caddy/Waitress HTTPS, explicit project CA validation, secure cookies and redirect tests; public/browser trust remains separate |
 | Data protection/education | Encrypted identifying details and proof, minimal public fields, privacy and usage guidance |
 | Logging/analytics | Audit events, restricted dashboard, per-user history, failed-login and workflow-denial metrics |
-| Security testing | 51 passing regression tests, scoped request manipulation, anonymous ZAP scan, SSLyze, Bandit and installed-dependency audit with fixes/retests |
-| Host/network security | Verified private-profile ACLs, loopback listeners, authenticated backend and non-admin process; dedicated service identity and operational recovery remain future work |
+| Security testing | 83 passing regression tests, 19 selected live HTTPS account checks, isolated backup/restore/rotation, dependency audit and reviewed Bandit findings; earlier ZAP/SSLyze evidence remains revision-specific |
+| Host/network security | Private-profile ACLs, loopback listeners, authenticated backend, non-admin process and tested local recovery; dedicated service identity and off-device key/backup custody require the operator |
 
 ## Deliberately bounded scope
 
@@ -46,7 +46,7 @@ uploads, image matching, payments, delivery, live university identity provider o
 
 1. Review and personalise this local implementation; record your decisions and contribution.
 2. Local HTTPS and scoped host hardening are verified; choose and assess a real hosting environment if deployment is required.
-3. Consider privileged-account MFA once the required baseline is stable.
+3. Enrol the user's own staff authenticator, save recovery codes privately and choose separate off-device backup/key storage. These personal/operator steps cannot be supplied by code.
 4. Extend the completed bounded assessment when new features, hosting or authentication controls are added.
 5. Keep the existing report unchanged until the user supplies their further notes, then incorporate approved new evidence.
 6. Complete the declarations, Canvas submission and viva preparation.

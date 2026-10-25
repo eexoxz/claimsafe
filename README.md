@@ -26,6 +26,8 @@ Generated demo usernames and passwords are saved to `.local/demo-accounts.txt` o
 machine only. Use the student, officer, and administrator accounts to explore different
 permissions. No passwords or local records belong in Git. To create your own officer or
 administrator without loading demo data, see `python manage.py create_account --help`.
+Staff now require an authenticator. Use the HTTPS profile below for staff access and account
+security; the HTTP developer profile cannot complete these HTTPS-only flows.
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py test
@@ -48,6 +50,8 @@ demo is preserved. Client validation uses the generated local CA explicitly. Win
 trust is not installed automatically, so ordinary browser trust still needs to be configured.
 See [deployment instructions](docs/DEPLOYMENT.md) and [security assessment evidence](docs/SECURITY_ASSESSMENT.md).
 The application, backend and proxy remain local; this does not publish the app.
+See [account security, encrypted backups and key rotation](docs/ACCOUNT_SECURITY_AND_RECOVERY.md)
+for authenticator enrolment, saved-code recovery and tested offline maintenance commands.
 
 ## Report draft
 
@@ -81,5 +85,7 @@ the behaviours they actually exercise; they do not certify complete security.
 
 This is a local prototype with a verified local HTTPS profile and a bounded security
 assessment. Public deployment, browser trust, a dedicated service identity and operational
-controls such as protected backup recovery remain separate work. The assignment report is
+controls such as off-device backup/key custody remain operator tasks. Mandatory staff MFA,
+saved-code recovery, encrypted snapshot restoration and key rotation are implemented and
+checked locally; they do not replace those operational decisions. The assignment report is
 frozen pending the user's further notes; new evidence is kept outside it. See the project plan.

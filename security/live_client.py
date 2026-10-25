@@ -15,7 +15,7 @@ def fixture():
     return json.loads((STATE / "private/assessment-fixture.json").read_text(encoding="utf-8"))
 
 
-def client(actor=None):
+def client(actor=None, *, password_only=False):
     session = requests.Session()
     session.trust_env = False
     session.verify = CA
@@ -28,7 +28,40 @@ def client(actor=None):
         }, headers={"Origin": BASE, "Referer": BASE + "/login/"}, allow_redirects=False, timeout=15)
         if reply.status_code != 302:
             raise RuntimeError(f"Fixture login did not succeed: HTTP {reply.status_code}")
+        if not password_only and reply.headers.get("Location", "").startswith("/account/"):
+            complete_mfa(session, actor, reply.headers["Location"])
     return session
+
+
+def complete_mfa(session, actor, location):
+    """Enrol only disposable fictional actors, never an operator's own account."""
+    import pyotp
+    data = fixture()
+    account = data["actors"][actor]
+    if not account["username"].startswith("check_"):
+        raise ValueError("Automatic enrolment is restricted to fictional assessment accounts.")
+    if location == "/account/authenticator/":
+        page = post(session, location, {"action": "start", "password": account["password"]})
+        element = BeautifulSoup(page.text, "html.parser").select_one(".token-box code")
+        if page.status_code != 200 or element is None:
+            raise RuntimeError("Fictional authenticator setup failed.")
+        secret = element.get_text(strip=True)
+        page = post(session, location, {"action": "confirm", "code": pyotp.TOTP(secret).now()})
+        codes = [element.get_text(strip=True) for element in BeautifulSoup(page.text, "html.parser").select(".recovery-code-list code")]
+        if page.status_code != 200 or len(codes) != 10:
+            raise RuntimeError("Fictional authenticator confirmation failed.")
+        account.update(totp_secret=secret, recovery_codes=codes)
+    elif location == "/account/verify/":
+        codes = account.get("recovery_codes", [])
+        if not codes:
+            raise RuntimeError("Fictional recovery codes exhausted; prepare a new isolated fixture.")
+        page = post(session, location, {"code": codes.pop()})
+        if page.status_code != 302:
+            raise RuntimeError("Fictional second-factor verification failed.")
+    else:
+        raise RuntimeError("Unexpected account redirect during fixture sign-in.")
+    # The fixture lives inside the ACL-protected ignored assessment profile.
+    (STATE / "private/assessment-fixture.json").write_text(json.dumps(data), encoding="utf-8")
 
 
 def get(session, path, **kwargs):
@@ -43,9 +76,9 @@ def post(session, path, data, *, csrf=True, headers=None):
     payload = dict(data)
     request_headers = {"Origin": BASE, "Referer": BASE + path}
     if csrf:
-        page = get(session, "/dashboard/")
-        element = BeautifulSoup(page.text, "html.parser").select_one('input[name="csrfmiddlewaretoken"]')
-        payload["csrfmiddlewaretoken"] = element["value"]
+        if not session.cookies.get("__Host-claimsafe_csrf"):
+            get(session, "/login/")
+        payload["csrfmiddlewaretoken"] = session.cookies["__Host-claimsafe_csrf"]
     request_headers.update(headers or {})
     return session.post(BASE + path, data=payload, headers=request_headers, allow_redirects=False, timeout=15)
 

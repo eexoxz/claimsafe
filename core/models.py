@@ -109,3 +109,24 @@ class RateBucket(models.Model):
     key = models.CharField(max_length=64, primary_key=True)
     count = models.PositiveIntegerField(default=0)
     expires_at = models.DateTimeField()
+
+
+class AccountSecurity(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name="account_security")
+    totp_secret_ciphertext = models.TextField(blank=True)
+    pending_secret_ciphertext = models.TextField(blank=True)
+    pending_session_digest = models.CharField(max_length=64, blank=True)
+    pending_expires_at = models.DateTimeField(null=True, blank=True)
+    last_totp_counter = models.BigIntegerField(default=-1)
+    version = models.PositiveIntegerField(default=1)
+
+    @property
+    def enabled(self):
+        return bool(self.totp_secret_ciphertext)
+
+
+class RecoveryCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recovery_codes")
+    digest = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    used_at = models.DateTimeField(null=True, blank=True)

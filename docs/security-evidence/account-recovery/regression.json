@@ -1,0 +1,8 @@
+{
+  "command": ".venv/Scripts/python.exe manage.py test --noinput",
+  "tests": 83,
+  "seconds": 39.206,
+  "result": "OK",
+  "raw_log_sha256": "b15acc9c412594b6e1cd00c09890f4606417e544c78fc992463ef3f18faf3412",
+  "performance_claim": false
+}

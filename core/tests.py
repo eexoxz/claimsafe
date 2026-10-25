@@ -13,7 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .crypto import decrypt_text, encrypt_text
-from .models import AuditEvent, Claim, CollectionGrant, FoundItem, RateBucket, User
+from .models import AccountSecurity, AuditEvent, Claim, CollectionGrant, FoundItem, RateBucket, User
 from .services import WorkflowError, collect_item, issue_collection_code, review_claim, submit_claim, throttle
 
 
@@ -45,6 +45,15 @@ class SecurityWorkflowTests(TestCase):
         client.force_login(user)
         session = client.session
         session["authenticated_at"] = time.time()
+        if user.is_officer:
+            # These tests isolate authorisation/workflow behaviour. Actual password
+            # and second-factor exchanges are exercised in test_account_security.py.
+            state, _ = AccountSecurity.objects.get_or_create(user=user, defaults={"totp_secret_ciphertext": encrypt_text("JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP")})
+            if not state.enabled:
+                state.totp_secret_ciphertext = encrypt_text("JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP")
+                state.save(update_fields=["totp_secret_ciphertext"])
+            session["mfa_user_id"] = user.pk
+            session["mfa_version"] = state.version
         session.save()
         return client
 
@@ -312,10 +321,10 @@ class SecurityWorkflowTests(TestCase):
         self.client.post(reverse("logout"))
         self.assertNotIn("_auth_user_id", self.client.session)
 
-    def test_privileged_logins_open_the_relevant_workspace(self):
-        for user, landing in ((self.officer, "staff_queue"), (self.admin, "audit")):
+    def test_privileged_password_login_requires_authenticator_setup_before_workspace(self):
+        for user in (self.officer, self.admin):
             response = self.client.post(reverse("login"), {"username": user.username, "password": PASSWORD})
-            self.assertRedirects(response, reverse(landing))
+            self.assertRedirects(response, reverse("mfa_setup"), fetch_redirect_response=False)
             self.client.post(reverse("logout"))
 
     def test_absolute_session_age_is_enforced(self):

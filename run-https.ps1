@@ -1,19 +1,20 @@
-param([switch]$Assessment, [switch]$PrepareOnly)
+param([switch]$Assessment, [switch]$PrepareOnly, [ValidatePattern('^[a-z][a-z0-9-]{0,39}$')][string]$ProfileName)
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
 function Invoke-Checked { param([scriptblock]$Command); & $Command; if ($LASTEXITCODE -ne 0) { throw 'HTTPS setup failed. See the output above.' } }
 if (!(Test-Path -LiteralPath '.venv/Scripts/python.exe')) { throw 'Run setup.ps1 first.' }
 Invoke-Checked { & '.venv/Scripts/python.exe' -c 'import waitress' }
 if ($env:CLAIMSAFE_PRODUCTION -eq '1') { throw 'Start this script from a shell without a pre-existing production setting.' }
-$profileName = if ($Assessment) { 'https-assessment' } else { 'https' }
-$stateDirectory = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".local\$profileName"))
+if ($Assessment -and $ProfileName) { throw 'Choose Assessment or ProfileName, not both.' }
+$selectedProfile = if ($ProfileName) { $ProfileName } elseif ($Assessment) { 'https-assessment' } else { 'https' }
+$stateDirectory = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".local\$selectedProfile"))
 $localRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '.local')) + [IO.Path]::DirectorySeparatorChar
 if (!$stateDirectory.StartsWith($localRoot, [StringComparison]::OrdinalIgnoreCase)) { throw 'State directory is outside this checkout.' }
 New-Item -ItemType Directory -Path $stateDirectory -Force | Out-Null
 if ((Get-Item -LiteralPath $stateDirectory).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'State directory must not be a junction or symbolic link.' }
 # Scope ACL changes to this profile directory, with no global account or firewall changes.
 $ownerSid = [Security.Principal.WindowsIdentity]::GetCurrent().User
-Invoke-Checked { & icacls.exe $stateDirectory /inheritance:r /grant:r "*$($ownerSid.Value):(OI)(CI)F" '*S-1-5-18:(OI)(CI)F' }
+Invoke-Checked { & '.venv/Scripts/python.exe' -c 'import sys; from pathlib import Path; from scripts.manage_data import protect; protect(Path(sys.argv[1]), directory=True)' $stateDirectory }
 $resultingAcl = Get-Acl -LiteralPath $stateDirectory
 foreach ($rule in $resultingAcl.Access) {
     $ruleSid = $rule.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value
@@ -28,12 +29,7 @@ try {
     $env:CLAIMSAFE_STATE_DIR = $stateDirectory
     $env:CLAIMSAFE_SECRETS_FILE = Join-Path $stateDirectory 'private\secrets.json'
     $env:CLAIMSAFE_DATABASE = Join-Path $stateDirectory 'data\claimsafe.sqlite3'
-    Invoke-Checked { & '.venv/Scripts/python.exe' scripts/initialize.py --proxy-token }
-    Invoke-Checked { & '.venv/Scripts/python.exe' manage.py migrate --noinput }
-    if (!(Test-Path -LiteralPath (Join-Path $stateDirectory 'demo-accounts.txt'))) {
-        Invoke-Checked { & '.venv/Scripts/python.exe' manage.py seed_demo }
-    }
-    Invoke-Checked { & '.venv/Scripts/python.exe' manage.py collectstatic --noinput }
+    Invoke-Checked { & '.venv/Scripts/python.exe' scripts/prepare_profile.py }
     Invoke-Checked { & '.venv/Scripts/python.exe' scripts/install_caddy.py }
     $env:CLAIMSAFE_PRODUCTION = '1'
     $env:CLAIMSAFE_ALLOWED_HOSTS = 'localhost,127.0.0.1'
@@ -52,7 +48,7 @@ try {
     Write-Host 'ClaimSafe HTTPS: https://localhost:8443 (loopback only)'
     Write-Host "Local CA: $stateDirectory\tls\pki\authorities\local\root.crt"
     Write-Host 'No certificate was installed into Windows or browser trust stores.'
-    Write-Host "Fictional credentials: $stateDirectory\demo-accounts.txt"
+    if (Test-Path -LiteralPath (Join-Path $stateDirectory 'demo-accounts.txt')) { Write-Host "Fictional credentials: $stateDirectory\demo-accounts.txt" }
     Invoke-Checked { & '.local/tools/caddy/caddy.exe' run --config deploy/Caddyfile --adapter caddyfile }
 } finally {
     if ($null -ne $backendProcess -and !$backendProcess.HasExited) { Stop-Process -Id $backendProcess.Id }

@@ -1,0 +1,32 @@
+{
+  "method": "Offline authenticated snapshot of the real fictional HTTPS assessment database, restored into a new private profile; rotation and retirement performed only on that copy",
+  "backup": {
+    "encrypted_fields_verified": 24,
+    "archive_bytes": 415756,
+    "archive_sha256": "3b3edbf550862ba56858cabc2490398b8ff961a065f7cc0162b66b34d0026951"
+  },
+  "restore": {
+    "encrypted_fields_verified": 24,
+    "sessions_and_grants_invalidated": true,
+    "saved_recovery_codes_revoked": true
+  },
+  "rotation": {
+    "rotated_fields": 24,
+    "previous_keys_retained": 1
+  },
+  "retirement": {
+    "encrypted_fields_verified": 24,
+    "retired_keys_removed": 1
+  },
+  "fresh_application_decrypted_fields": 24,
+  "decrypted_data_preserved_through_rotation_and_retirement": true,
+  "source_database_and_keys_unchanged": true,
+  "restored_sessions_grants_rate_buckets_cleared": true,
+  "restored_recovery_codes_revoked": true,
+  "original_demo": {
+    "items": 6,
+    "claims": 2,
+    "encrypted_fields_verified": 9
+  },
+  "secrets_printed": false
+}

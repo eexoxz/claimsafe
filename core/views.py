@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
 from .crypto import decrypt_text, encrypt_text
+from .account_security import needs_mfa, security_state
 from .forms import ClaimForm, CollectionForm, ItemForm, LoginForm, RegistrationForm, ReviewForm
 from .models import AuditEvent, Claim, FoundItem, User
 from .services import WorkflowError, collect_item, issue_collection_code, record, review_claim, submit_claim, throttle
@@ -102,6 +103,10 @@ def sign_in(request):
         if form.is_valid():
             login(request, form.get_user())
             request.session["authenticated_at"] = time.time()
+            state = security_state(request.user)
+            if needs_mfa(request.user, state):
+                record(request.user, "auth.password_verified")
+                return redirect("mfa_challenge" if state.enabled else "mfa_setup")
             record(request.user, "auth.login")
             if request.user.is_administrator:
                 return redirect("audit")
