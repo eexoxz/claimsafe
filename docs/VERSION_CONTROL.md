@@ -3,6 +3,17 @@
 The repository is prepared locally on `main`. The intended GitHub account is `eexoxz`.
 There is no GitHub repository or remote until the owner creates/selects one.
 
+## Agreed workflow
+
+For subsequent work, the assistant implements the requested change, verifies the affected
+behaviour, reviews the diff, and creates a meaningful local commit. The user handles all
+pushes. Local commits are already authorised; no repeated approval is needed. Remote
+repository creation, remote changes and pushes require a separate explicit request.
+
+This agreement is also recorded in `AGENTS.md` for future work in this checkout.
+
+## Connect GitHub when ready
+
 Create an empty repository named `claimsafe` under that account. Do not initialise it with
 a separate README, licence or gitignore because this repository already has its own history.
 Then, from this directory:
