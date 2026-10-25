@@ -1,0 +1,18 @@
+{
+  "caddy": {
+    "version": "2.11.7",
+    "checksum_algorithm": "SHA-512",
+    "archive_checksum": "c308154504e53755958ffc62d8a2657ab17eefd6dd25c45dbb2c3d93d29519971f77ca652f7d0f2bcb7f980b9ba3822478865e29969d0272d7613550a43152b1",
+    "source": "https://github.com/caddyserver/caddy/releases/tag/v2.11.7"
+  },
+  "zap": {
+    "url": "https://github.com/zaproxy/zaproxy/releases/download/v2.17.0/ZAP_2.17.0_Crossplatform.zip",
+    "sha256": "94c8f767b1c2e94f0db66b3ae56514d5e3f5a728ee1b6c798e0c8fe2d61fbff0",
+    "filename": "ZAP_2.17.0_Crossplatform.zip"
+  },
+  "java": {
+    "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jre_x64_windows_hotspot_21.0.12.1_1.zip",
+    "sha256": "d35f31e712f0fcf6ac5a093edc90204fbff22f720ba3950bd09d331d5e621636",
+    "filename": "OpenJDK21U-jre_x64_windows_hotspot_21.0.12.1_1.zip"
+  }
+}

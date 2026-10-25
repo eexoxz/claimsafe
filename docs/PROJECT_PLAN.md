@@ -31,11 +31,11 @@ All state changes are server-side and cannot be selected in a browser form.
 | --- | --- |
 | Access levels | Registration, password hashing, session rotation, role/ownership checks; test cross-account requests |
 | Input/output/errors | Server-side forms, ORM parameterisation, autoescaped templates, CSRF, generic error pages |
-| Secure communication | NEXT: HTTPS reverse proxy, trusted certificate, secure cookies, redirect and certificate tests |
+| Secure communication | Local Caddy/Waitress HTTPS, explicit project CA validation, secure cookies and redirect tests; public/browser trust remains separate |
 | Data protection/education | Encrypted identifying details and proof, minimal public fields, privacy and usage guidance |
 | Logging/analytics | Audit events, restricted dashboard, per-user history, failed-login and workflow-denial metrics |
-| Security testing | Automated boundary tests; NEXT: manual proxy tests, automated application/dependency scans and retests |
-| Host/network security | NEXT: restrict database access, least-privilege app account, secret ACLs, backup protection, firewall configuration |
+| Security testing | 51 passing regression tests, scoped request manipulation, anonymous ZAP scan, SSLyze, Bandit and installed-dependency audit with fixes/retests |
+| Host/network security | Verified private-profile ACLs, loopback listeners, authenticated backend and non-admin process; dedicated service identity and operational recovery remain future work |
 
 ## Deliberately bounded scope
 
@@ -45,10 +45,10 @@ uploads, image matching, payments, delivery, live university identity provider o
 ## Remaining milestones
 
 1. Review and personalise this local implementation; record your decisions and contribution.
-2. Configure and test HTTPS and host hardening in a reproducible deployment environment.
+2. Local HTTPS and scoped host hardening are verified; choose and assess a real hosting environment if deployment is required.
 3. Consider privileged-account MFA once the required baseline is stable.
-4. Perform manual and automated vulnerability assessments; fix and retest findings.
-5. Capture authentic evidence and write the 3,200-4,800-word report against the 2026 rubric.
+4. Extend the completed bounded assessment when new features, hosting or authentication controls are added.
+5. Keep the existing report unchanged until the user supplies their further notes, then incorporate approved new evidence.
 6. Complete the declarations, Canvas submission and viva preparation.
 
 Report preparation follows [the writing guide](REPORT_WRITING_GUIDE.md) and

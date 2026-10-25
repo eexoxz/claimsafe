@@ -23,6 +23,8 @@ class ResponseSecurityMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        # Validate Host even on routes that never construct an absolute URL.
+        request.get_host()
         response = self.get_response(request)
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'none'; style-src 'self'; img-src 'self' data:; "

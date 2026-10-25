@@ -6,9 +6,11 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-LOCAL_DIR = BASE_DIR / ".local"
+LOCAL_DIR = Path(os.environ.get("CLAIMSAFE_STATE_DIR", BASE_DIR / ".local")).resolve()
+SECRETS_FILE = Path(os.environ.get("CLAIMSAFE_SECRETS_FILE", LOCAL_DIR / "secrets.json")).resolve()
+PRODUCTION = os.environ.get("CLAIMSAFE_PRODUCTION") == "1"
 try:
-    LOCAL_SECRETS = json.loads((LOCAL_DIR / "secrets.json").read_text(encoding="utf-8"))
+    LOCAL_SECRETS = json.loads(SECRETS_FILE.read_text(encoding="utf-8"))
 except FileNotFoundError:
     LOCAL_SECRETS = {}
 
@@ -17,7 +19,8 @@ FIELD_ENCRYPTION_KEY = os.environ.get("CLAIMSAFE_ENCRYPTION_KEY") or LOCAL_SECRE
 if not SECRET_KEY or not FIELD_ENCRYPTION_KEY:
     raise ImproperlyConfigured("Run python scripts/initialize.py to create local secrets first.")
 
-PRODUCTION = os.environ.get("CLAIMSAFE_PRODUCTION") == "1"
+if PRODUCTION and not os.environ.get("CLAIMSAFE_ALLOWED_HOSTS"):
+    raise ImproperlyConfigured("Production requires explicit CLAIMSAFE_ALLOWED_HOSTS.")
 DEBUG = False
 ALLOWED_HOSTS = [value.strip() for value in os.environ.get(
     "CLAIMSAFE_ALLOWED_HOSTS", "127.0.0.1,localhost,[::1]"
@@ -55,14 +58,14 @@ TEMPLATES = [{
 WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {"default": {
     "ENGINE": "django.db.backends.sqlite3",
-    "NAME": LOCAL_DIR / "claimsafe.sqlite3",
+    "NAME": Path(os.environ.get("CLAIMSAFE_DATABASE", LOCAL_DIR / "claimsafe.sqlite3")).resolve(),
     "OPTIONS": {"timeout": 20, "transaction_mode": "IMMEDIATE"},
     "TEST": {"NAME": LOCAL_DIR / "test-claimsafe.sqlite3"},
 }}
 AUTH_USER_MODEL = "core.User"
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 12}},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 15}},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
@@ -81,13 +84,16 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = PRODUCTION
 CSRF_COOKIE_SECURE = PRODUCTION
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_NAME = "__Host-claimsafe_session" if PRODUCTION else "sessionid"
+CSRF_COOKIE_NAME = "__Host-claimsafe_csrf" if PRODUCTION else "csrftoken"
 CSRF_FAILURE_VIEW = "core.views.csrf_failure"
 SESSION_COOKIE_AGE = 1800
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_ABSOLUTE_SECONDS = 8 * 60 * 60
 SECURE_SSL_REDIRECT = PRODUCTION
-SECURE_HSTS_SECONDS = 31536000 if PRODUCTION else 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = PRODUCTION
+SECURE_HSTS_SECONDS = int(os.environ.get("CLAIMSAFE_HSTS_SECONDS", "31536000")) if PRODUCTION else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_HSTS_PRELOAD = False
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"

@@ -1,0 +1,37 @@
+{
+  "recorded_at": "2026-10-26T05:34:28.312535+08:00",
+  "baseline_commit": "29b2bde",
+  "scope": "Local HTTPS and host controls, application regression tests, dependency/static/web/TLS scans and targeted request manipulation. Report frozen.",
+  "source_sha256": {
+    "config/settings.py": "baaf6629cee149e2900e08051035e077717a8737a055700a8dbc209e064e15b1",
+    "config/proxy.py": "d9888da97d1a026a1f757f6300b4f8686889ae6336ae777ba50d3326e2c6c0af",
+    "core/middleware.py": "ff1ec26db7beff2973490f6f1565c95a11918b458e935136e066acc4b007ac0a",
+    "core/services.py": "6ed90dac5a59ca1ae3905fc1b8922dc0997a720da82dee14311c93b544bf278f",
+    "core/tests.py": "c1be1702f6e7b9df96e657d4135c5a720dd3ef24c7a02ba0647828e1539e03d8",
+    "core/test_deployment.py": "294798e97f83e702604a1c93b70e92b53e2ed75c9fde34b6175758988d9ca816",
+    "core/management/commands/create_account.py": "a8a89c78a73533bdb5ee3f45d6dc7f1057bc620e2445b34cbee4bbea7084b0ab",
+    "core/management/commands/seed_demo.py": "4b7c19a1cf78bad25bfe254f2e52cd7c2340824ff4074d4873eb061795086617",
+    "deploy/Caddyfile": "078e3b88a2f0631aee054e6d65b8550791ab5509695273523e837be9a8c2ad52",
+    "requirements.lock": "4e4a1fefcb9bc3b5d45316d70602f48e0ca36c0a9c43c7f1f23592f24f560359",
+    "requirements-deploy.txt": "1def421a54244ccbda1a7612c3955e1beadf95d9ab060b5070599abae05530c7",
+    "run-https.ps1": "b2818fcd15c529628505d712407d905363f39474b84dba1879b68b5df48f71a2",
+    "scripts/initialize.py": "a12f5ba67fca026bbbdca5acc550e3d2880d4ac0961c0ad88a68b357471453cb",
+    "scripts/check_deployment.py": "2e7afe0ab43cd4fc5fbcc3e996d742e35a9d35edfa1e388c44b672236a8ea85a",
+    "scripts/install_caddy.py": "0db60de3498da592cd2e58e96302f23ae7ceb373892e3bd96d22c52a26e49c49",
+    "scripts/serve_https_backend.py": "f1e727faa54395ff782d1d39e5272f38d859dac0ed59ff9f22f75f0b7fca5923",
+    "security/zap.yaml": "c8e6fe0b0ba181fd8a5c48dc345b317ac032d5da2594b03ee210e3379d135aea",
+    "security/prepare_fixture.py": "880e051ab07bb143d9451919efdcdf4554e19baa33cde721e8d49dbecad1d040",
+    "security/live_client.py": "8e5ebe57ba2d6b23fd17876b71446c156d0f63db589026fb30859abb0959dce7",
+    "security/export_evidence.py": "86fccbd78fa1aa4e6191e8979e3d496a79f738ddfb1175803b874b512e048cb2"
+  },
+  "evidence_sha256": {
+    "dependencies.json": "9fafd04c6176601ac58bcf9e458e3e15a1efa9fd5392805798f574102d4454a8",
+    "host-controls.json": "3660abf6ffacdb172bfea02cb673b40f3626bfea58834ef119ee9e8ec60e7bef",
+    "regression-tests.json": "fc8d0cc3b196a05f5bc83a931a75e8ea402d9c6eaeaebe0ea27c0efb75c074dd",
+    "request-observations.json": "865af8875e96442dece9b0a4ef7865346a9b5ab36fdce4d55f3cf6e26faad0c9",
+    "static-analysis.json": "7bd09dc30b2d3c6ae26f055d0fbd06aa745f8f0c68f41515f211c212866e0fa8",
+    "tls.json": "829660d2a5461d49ca5fbcea7bef14ec0bfbbadb709a2d243400b2dd296458fc",
+    "tools.json": "4072d832cb9d10abdd60239f3aa5896aa5ec90ea98b229b84e0da23c6fb9efb9",
+    "zap.json": "5de05fc331e0270e5fb7f3c6f516807230abc2e430439266c6d887edb7a54a31"
+  }
+}

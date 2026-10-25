@@ -1,0 +1,15 @@
+{
+  "tool": "Bandit 1.9.4",
+  "raw_result_sha256": "187d5bd8b63b181020fd7c8ad854d838d58bad956724e293f6d6a2b1b6973b3e",
+  "findings": [
+    {
+      "test_id": "B310",
+      "issue_severity": "MEDIUM",
+      "issue_confidence": "HIGH",
+      "filename": ".\\scripts/install_caddy.py",
+      "line_number": 15,
+      "issue_text": "Audit url open for permitted schemes. Allowing use of file:/ or custom schemes is often unexpected."
+    }
+  ],
+  "review": "B310 flags urlopen in the Caddy installer. The URL is a fixed HTTPS publisher release URL, not request input, and the archive must match a pinned SHA-512 before extraction/execution. Reviewed false positive; retained rather than globally suppressing the rule."
+}

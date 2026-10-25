@@ -83,3 +83,37 @@ host hardening and complete manual/automated vulnerability assessment.
 Versioned Word and PDF copies are under `docs/report/`; text, sanitised template and builder
 remain editable in the repository. Production instructions and submission reminders are in
 `REPORT_BUILD.md`, outside the formal report. Local version control only; no remote push.
+
+### 2026-10-26 local HTTPS and security assessment
+
+The user authorised application security work and explicitly froze further report changes.
+Added a Caddy 2.11.7 / Waitress 3.0.2 profile, private current-user/SYSTEM state ACLs, loopback
+listeners, a credential-protected WSGI boundary, explicit Host rejection and Secure/HttpOnly
+`__Host-` cookies. The app uses a separate database and key file in the HTTPS profile. No
+Windows/browser CA installation, public hosting, firewall change or service-account creation
+was performed. Process checks confirmed a non-administrator token.
+
+The initial full installed-environment dependency audit found seven advisory records in
+cryptography 46.0.7, representing four distinct advisories. Upgraded it to 50.0.2 and verified
+all six original demo items and both original claims could still be decrypted. The repeated
+audit examined nine installed packages with no known vulnerability results. Raised the new
+password minimum from twelve to fifteen characters and aligned CLI guidance.
+
+Reviewed configuration/source and individually manipulated live HTTPS requests for ownership,
+role boundaries, registration privilege fields, CSRF/origin, stored markup, SQL-like search,
+session deactivation, collection replay, headers, private file paths and forwarding-based
+throttle bypass. Corrected a setup redirect loop and an empty success response on unknown
+hosts; final unknown-host requests receive 421. Failed/incomplete scanner runs were discarded.
+
+The final ZAP automation plan succeeded, discovered 17 URLs, and completed five selected
+active rules in 25 seconds. No low/medium/high alerts; three informational types were reviewed.
+Bandit returned one reviewed B310 false positive on the fixed HTTPS/checksummed downloader.
+SSLyze confirmed TLS 1.2/1.3, rejected SSL 2/3 and TLS 1.0/1.1, and did not identify the
+specified legacy TLS weaknesses. Project-CA trust and hostname rejection were checked
+independently; default public stores intentionally do not trust this local CA.
+
+All 51 automated application tests passed in 15.181 seconds. New tests cover the authenticated
+backend boundary, credential removal before app/error logging, Host rejection and password
+length. This timing is not a performance benchmark. Technical notes and redacted evidence are
+under `docs/DEPLOYMENT.md`, `docs/SECURITY_ASSESSMENT.md` and `docs/security-evidence/`.
+The report sources, builders, assets and reviewed Word/PDF are unchanged from 29b2bde.

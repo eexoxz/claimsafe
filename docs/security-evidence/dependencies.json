@@ -1,0 +1,175 @@
+{
+  "tool": "pip-audit 2.10.1",
+  "scope": "Installed application environment including Waitress and pip; audit tools are in a different environment.",
+  "before": {
+    "raw_result_sha256": "43d38b36c03efe86103181b50ff41760b34b5e838d5d10e860927525a5cca930",
+    "packages_examined": 9,
+    "packages": [
+      {
+        "name": "asgiref",
+        "version": "3.13.0",
+        "advisories": []
+      },
+      {
+        "name": "cffi",
+        "version": "2.1.1",
+        "advisories": []
+      },
+      {
+        "name": "cryptography",
+        "version": "46.0.7",
+        "advisories": [
+          {
+            "id": "PYSEC-2026-3554",
+            "aliases": [
+              "GHSA-m2h6-j472-rp4c",
+              "CVE-2026-69248"
+            ],
+            "fix_versions": [
+              "49.0.0"
+            ]
+          },
+          {
+            "id": "PYSEC-2026-3552",
+            "aliases": [
+              "CVE-2026-69247",
+              "GHSA-g6cj-pr64-35w5"
+            ],
+            "fix_versions": [
+              "50.0.0"
+            ]
+          },
+          {
+            "id": "PYSEC-2026-3553",
+            "aliases": [
+              "CVE-2026-69249",
+              "GHSA-jwv3-5hgf-82ww"
+            ],
+            "fix_versions": [
+              "49.0.0"
+            ]
+          },
+          {
+            "id": "PYSEC-2026-3552",
+            "aliases": [
+              "CVE-2026-69247",
+              "GHSA-g6cj-pr64-35w5"
+            ],
+            "fix_versions": [
+              "50.0.0"
+            ]
+          },
+          {
+            "id": "PYSEC-2026-3553",
+            "aliases": [
+              "CVE-2026-69249",
+              "GHSA-jwv3-5hgf-82ww"
+            ],
+            "fix_versions": [
+              "49.0.0"
+            ]
+          },
+          {
+            "id": "PYSEC-2026-3554",
+            "aliases": [
+              "GHSA-m2h6-j472-rp4c",
+              "CVE-2026-69248"
+            ],
+            "fix_versions": [
+              "49.0.0"
+            ]
+          },
+          {
+            "id": "GHSA-537c-gmf6-5ccf",
+            "aliases": [],
+            "fix_versions": [
+              "48.0.1"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "django",
+        "version": "5.2.18",
+        "advisories": []
+      },
+      {
+        "name": "pip",
+        "version": "26.2.2",
+        "advisories": []
+      },
+      {
+        "name": "pycparser",
+        "version": "3.12",
+        "advisories": []
+      },
+      {
+        "name": "sqlparse",
+        "version": "0.6.0",
+        "advisories": []
+      },
+      {
+        "name": "tzdata",
+        "version": "2026.5",
+        "advisories": []
+      },
+      {
+        "name": "waitress",
+        "version": "3.0.2",
+        "advisories": []
+      }
+    ]
+  },
+  "after": {
+    "raw_result_sha256": "3a88b6700eb3183eedebc9982099b76ed08f6341f896c2bc45ea756ab81798ab",
+    "packages_examined": 9,
+    "packages": [
+      {
+        "name": "asgiref",
+        "version": "3.13.0",
+        "advisories": []
+      },
+      {
+        "name": "cffi",
+        "version": "2.1.1",
+        "advisories": []
+      },
+      {
+        "name": "cryptography",
+        "version": "50.0.2",
+        "advisories": []
+      },
+      {
+        "name": "django",
+        "version": "5.2.18",
+        "advisories": []
+      },
+      {
+        "name": "pip",
+        "version": "26.2.2",
+        "advisories": []
+      },
+      {
+        "name": "pycparser",
+        "version": "3.12",
+        "advisories": []
+      },
+      {
+        "name": "sqlparse",
+        "version": "0.6.0",
+        "advisories": []
+      },
+      {
+        "name": "tzdata",
+        "version": "2026.5",
+        "advisories": []
+      },
+      {
+        "name": "waitress",
+        "version": "3.0.2",
+        "advisories": []
+      }
+    ]
+  },
+  "review": "Seven original advisory records map to four distinct advisories; three PYSEC IDs were returned twice. No direct Fernet exploit was demonstrated. cryptography was upgraded to 50.0.2."
+}

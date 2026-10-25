@@ -13,5 +13,10 @@
 - For report work, follow `docs/REPORT_WRITING_GUIDE.md` and `docs/REPORT_PLAN.md`. Preserve
   the user's established plain, connected academic prose and distinguish actual evidence
   from demonstration data and planned work. The 2026 coursework brief governs the structure.
+- The user has frozen the report at commit 29b2bde pending further notes. During application
+  security work, do not edit or regenerate `docs/REPORT*`, `docs/report/`, `docs/report-assets/`
+  or the report builders and exported report files. Keep new evidence in `docs/security-evidence/`
+  and technical notes in separate security/deployment documents until the user authorises
+  report modifications.
 - At handoff, briefly state what changed, what was checked, the local commit identifier,
   and how to run or access the result when relevant.

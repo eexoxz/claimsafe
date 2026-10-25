@@ -1,0 +1,82 @@
+# Authorised local assessment only. No real accounts or external targets.
+env:
+  contexts:
+    - name: ClaimSafe public pages
+      urls:
+        - https://localhost:8443
+      includePaths:
+        - 'https://localhost:8443/(\?.*)?'
+        - 'https://localhost:8443/privacy/.*'
+        - 'https://localhost:8443/items/[0-9a-f-]+/'
+        - 'https://localhost:8443/static/.*'
+  parameters:
+    failOnError: true
+    failOnWarning: true
+    continueOnFailure: false
+    progressToStdout: true
+jobs:
+  - type: passiveScan-config
+    parameters:
+      scanOnlyInScope: true
+      maxAlertsPerRule: 10
+  - type: requestor
+    requests:
+      - url: https://localhost:8443/?q=notebook
+        method: GET
+        responseCode: 200
+  - type: spider
+    parameters:
+      context: ClaimSafe public pages
+      maxDuration: 1
+      maxDepth: 3
+      maxChildren: 20
+      threadCount: 2
+      processForm: false
+      postForm: false
+      parseRobotsTxt: false
+      parseSitemapXml: false
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 1
+  - type: activeScan
+    parameters:
+      context: ClaimSafe public pages
+      maxRuleDurationInMins: 1
+      maxScanDurationInMins: 3
+      threadPerHost: 2
+      delayInMs: 20
+      addQueryParam: true
+    policyDefinition:
+      defaultStrength: Low
+      defaultThreshold: 'Off'
+      rules:
+        - id: 40018
+          name: SQL injection
+          threshold: Medium
+        - id: 40012
+          name: Reflected cross site scripting
+          threshold: Medium
+        - id: 6
+          name: Path traversal
+          threshold: Medium
+        - id: 40003
+          name: CRLF injection
+          threshold: Medium
+        - id: 20019
+          name: External redirect
+          threshold: Medium
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 1
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: ../.local/zap-results
+      reportFile: zap-public
+      reportTitle: ClaimSafe local public surface assessment
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: ../.local/zap-results
+      reportFile: zap-public
+      reportTitle: ClaimSafe local public surface assessment

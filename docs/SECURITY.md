@@ -43,11 +43,13 @@ encryption, not AES-GCM or end-to-end encryption. The application can decrypt re
 authorised requests. Token metadata may expose encryption time. Passwords use Django's
 password hashing API; collection codes have high entropy and are stored as SHA-256 digests.
 
-The database and keys are under ignored `.local/` for easy local development. This excludes
-them from Git but does not establish strong separation on the host. On Windows, the operator
-must review ACLs before any sensitive use. Production requires a separate protected key
-location or secret manager, protected backups, and a documented rotation/recovery process.
-Losing the matching field key loses access to encrypted records. Setup never overwrites it.
+The original HTTP demo keeps its database and keys under ignored `.local/`. The HTTPS
+launcher uses a separate profile with private/data/TLS directories and an ACL limited to
+the current Windows user and SYSTEM. This was verified on the isolated assessment profile.
+The processes ran without an administrator token, although a dedicated service identity has
+not been provisioned. A real deployment still requires protected backups and a documented
+rotation/recovery process. Losing the matching field key loses access to encrypted records.
+Setup never overwrites an existing key. The application now uses cryptography 50.0.2.
 
 ## SQLite concurrency boundary
 
@@ -61,15 +63,23 @@ on SQLite. SQLite serialises writes and is a local prototype choice, not a high-
 Do not switch database engines or transaction settings without reviewing and retesting these
 assumptions. Current concurrency evidence applies to this SQLite configuration.
 
-## Deployment still required
+## Local HTTPS and remaining deployment work
 
 Local preview uses HTTP bound to 127.0.0.1. `runserver --insecure` only serves static assets
 with DEBUG disabled; it is not an HTTPS or production server. Real users must not enter real
 personal data in this local demonstration.
 
-`CLAIMSAFE_PRODUCTION=1` enables HTTPS redirects, Secure cookies and HSTS. These switches
-alone do not configure a certificate, TLS termination, or a production process manager.
-Before deployment:
+`run-https.ps1` provides a tested Caddy/Waitress profile on loopback. TLS 1.2/1.3, certificate
+validation against the explicit project CA, redirects, cookie flags, protected file ACLs and
+proxy/Host manipulation were checked. The proxy's administration API is disabled. Direct
+backend requests need an unlogged random credential, not just a forwarded protocol header.
+The password minimum is fifteen characters. See [deployment instructions](DEPLOYMENT.md)
+and [the separate assessment record](SECURITY_ASSESSMENT.md).
+
+Windows/browser trust stores were not changed, so the local CA is not publicly or
+automatically browser-trusted. All listeners remain on 127.0.0.1. The production settings
+switch alone is still not a substitute for running the actual deployment profile.
+Before deployment beyond this machine:
 
 1. Configure a production WSGI server behind a trusted HTTPS reverse proxy with a valid certificate.
 2. Set the actual `CLAIMSAFE_ALLOWED_HOSTS` and `CLAIMSAFE_CSRF_ORIGINS`.
@@ -91,7 +101,10 @@ Before deployment:
 - Add periodic deletion of expired rate buckets and a researched, documented data-retention/deletion policy.
 - No tamper-evident external log storage, alerting, backup restoration exercise or key rotation workflow yet.
 - No upload handling; no claim of malware scanning or attachment security.
-- No manual proxy assessment, full automated web scan or dependency-vulnerability audit has been completed yet.
+- A bounded manual request assessment, anonymous ZAP scan, TLS scan, static analysis and
+  before/after installed-dependency audit have been completed. Their exact scope and findings
+  are recorded separately; authenticated scanner coverage and exhaustive penetration testing
+  have not been completed.
 - Tests cover specified cases, not every possible injection payload, race or authorisation path.
 - Privacy notice is a prototype notice; assess actual legal applicability before real processing.
 

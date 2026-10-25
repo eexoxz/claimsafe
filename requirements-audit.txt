@@ -1,0 +1,6 @@
+# Isolated assessment environment; do not install these in the application environment.
+pip-audit==2.10.1
+bandit==1.9.4
+requests==2.34.2
+beautifulsoup4==4.15.0
+sslyze==6.3.1

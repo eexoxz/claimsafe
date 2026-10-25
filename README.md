@@ -35,6 +35,20 @@ administrator without loading demo data, see `python manage.py create_account --
 See [project scope](docs/PROJECT_PLAN.md), [security design](docs/SECURITY.md),
 [development log](docs/DEVELOPMENT_LOG.md), and [Git instructions](docs/VERSION_CONTROL.md).
 
+## Local HTTPS
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-deploy.txt
+.\run-https.ps1
+```
+
+This runs Caddy and Waitress at `https://localhost:8443`, with HTTP redirection on port 8080.
+It uses its own protected state and fictional credentials under `.local/https/`; the earlier
+demo is preserved. Client validation uses the generated local CA explicitly. Windows/browser
+trust is not installed automatically, so ordinary browser trust still needs to be configured.
+See [deployment instructions](docs/DEPLOYMENT.md) and [security assessment evidence](docs/SECURITY_ASSESSMENT.md).
+The application, backend and proxy remain local; this does not publish the app.
+
 ## Report draft
 
 The full report source is in [docs/REPORT_DRAFT.md](docs/REPORT_DRAFT.md), with versioned
@@ -65,7 +79,7 @@ the behaviours they actually exercise; they do not certify complete security.
 
 ## Current boundary
 
-This is a local prototype. HTTPS deployment, certificate validation, deployment hardening,
-manual vulnerability assessment and automated scanning must be completed and evidenced,
-then reflected in the coursework report, before treating the assignment as finished.
-See the project plan.
+This is a local prototype with a verified local HTTPS profile and a bounded security
+assessment. Public deployment, browser trust, a dedicated service identity and operational
+controls such as protected backup recovery remain separate work. The assignment report is
+frozen pending the user's further notes; new evidence is kept outside it. See the project plan.

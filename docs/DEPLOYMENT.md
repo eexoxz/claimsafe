@@ -1,0 +1,82 @@
+# Local HTTPS deployment
+
+This profile runs Caddy 2.11.7 in front of Waitress 3.0.2. It is a local demonstration,
+not a published campus service. Caddy terminates TLS; Waitress accepts authenticated proxy
+requests on loopback. The Django development server is not used for this profile.
+
+## Start
+
+From the repository in PowerShell, with the original setup already completed:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-deploy.txt
+.\run-https.ps1
+```
+
+The address is `https://localhost:8443`. HTTP on port 8080 redirects to that address while
+preserving the path and query. Port 9010 is the private backend. All three TCP listeners
+bind to `127.0.0.1`; Caddy's HTTP/3 listener also uses loopback. No firewall rule or Windows
+service is installed. Stop the foreground script with Ctrl+C; its cleanup stops its backend.
+
+The new profile has its own fictional demonstration accounts and database. Its credentials
+are in `.local/https/demo-accounts.txt`. The earlier HTTP demo under `.local/` is preserved.
+`-Assessment` selects a separate `.local/https-assessment/` profile for security probes.
+`-PrepareOnly` provisions and validates the selected profile without starting the servers.
+
+## Certificate trust
+
+Caddy issues local certificates for `localhost` and `127.0.0.1`. The public CA certificate is:
+
+```text
+.local/https/tls/pki/authorities/local/root.crt
+```
+
+Use that CA file explicitly when validating the local service with a client. For example,
+in a second terminal while the server is running:
+
+```powershell
+.\.venv\Scripts\python.exe -c 'import ssl,urllib.request; ctx=ssl.create_default_context(cafile=".local/https/tls/pki/authorities/local/root.crt"); print(urllib.request.urlopen("https://localhost:8443/",context=ctx).status)'
+```
+
+This checks the chain, hostname and validity period. No certificate-validation bypass is
+needed for this request. Windows and browser trust stores are left unchanged, so an ordinary
+browser will not yet trust this local CA. Trusted browser use requires explicit CA trust,
+or a public certificate on a real deployment hostname. The local CA is not publicly trusted.
+Caddy renews its local leaf certificates while running; retain its protected TLS storage.
+
+## Files and process boundary
+
+The launcher removes inherited access from the selected profile directory and grants access
+to the current Windows user and SYSTEM. Keys and the proxy credential are in `private/`,
+the database is in `data/`, and Caddy's CA material is in `tls/`. Child files inherit that
+restricted ACL. The verified processes ran without an administrator token. They use the
+current account, not a separately provisioned service identity.
+
+The proxy overwrites the protocol assertion and supplies the direct client's address.
+Waitress trusts protocol/address headers only from its loopback peer. An additional random
+proxy credential is required by the WSGI wrapper, so a local process cannot bypass this
+boundary merely by asserting `X-Forwarded-Proto: https`. The wrapper removes its credential
+before Django receives the request. The proxy's administration API and configuration
+autosave are disabled. Only collected static files have a file-server route; source files,
+keys and databases are not a web root. Unexpected hostnames receive 421, and Django also
+validates Host on every request independently of the proxy.
+
+Production mode uses Secure, HttpOnly, SameSite=Lax cookies with `__Host-` names and Path=/.
+The deployment check script refuses unexpected findings. It explicitly reports two accepted
+localhost policy exceptions: HSTS does not include subdomains (security.W005), and public
+HSTS preloading is not enabled (security.W021). Local HSTS lasts one hour. These choices
+must be reconsidered for an operator-controlled public domain rather than hidden globally.
+
+## Deployment beyond this machine
+
+A real service needs an operator-selected hostname and hosting environment, a publicly
+trusted certificate or managed institutional CA, a dedicated service identity, protected
+backup/recovery procedures and appropriate network rules. It also needs monitoring and
+privacy/retention decisions. The checked local profile does not establish those outcomes.
+Do not expose the development server or the current backend to the network by changing a
+bind address. Review the proxy, identity, certificate and persistence design for that host.
+
+Primary implementation references: [Caddy automatic HTTPS](https://caddyserver.com/docs/automatic-https),
+[Caddy proxy headers](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy),
+[Waitress proxy configuration](https://docs.pylonsproject.org/projects/waitress/en/latest/arguments.html)
+and [Django deployment checks](https://docs.djangoproject.com/en/5.2/ref/checks/#security).

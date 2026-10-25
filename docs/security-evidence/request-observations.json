@@ -1,0 +1,149 @@
+{
+  "method": "Exploratory source/configuration review and individually selected HTTP request manipulations, supported by scripts. These are not independent user tests or a full penetration test.",
+  "observations": [
+    {
+      "case": "Cross-account claim retrieval",
+      "owner_status": 200,
+      "other_status": 404,
+      "officer_status": 200,
+      "private_marker_public": false,
+      "private_marker_other": false,
+      "private_marker_officer": true
+    },
+    {
+      "case": "Administrator access boundary",
+      "student_audit": 403,
+      "officer_audit": 403
+    },
+    {
+      "case": "TLS certificate with explicit project CA",
+      "protocol": "TLSv1.3",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "subject_alt_names": [
+        [
+          "DNS",
+          "localhost"
+        ]
+      ],
+      "valid_until": "Oct 26 09:04:04 2026 GMT"
+    },
+    {
+      "case": "Transport and proxy manipulation",
+      "http_status": 308,
+      "redirect": "https://localhost:8443/privacy/?check=1",
+      "forged_forwarding_status": 200,
+      "direct_backend_forged_credential": 404,
+      "unexpected_host_status": 200,
+      "system_default_trust_rejects_local_CA": true,
+      "sensitive_paths": {
+        "/.local/secrets.json": 404,
+        "/.git/HEAD": 404,
+        "/config/settings.py": 404,
+        "/static/%2e%2e/.local/secrets.json": 404,
+        "/static/": 404
+      },
+      "css_status": 200,
+      "css_type": "text/css; charset=utf-8",
+      "css_nosniff": "nosniff"
+    },
+    {
+      "case": "CSRF and review request manipulation",
+      "missing_token": 403,
+      "foreign_origin_with_valid_token": 403,
+      "student_review": 403
+    },
+    {
+      "case": "Collection replay over HTTPS",
+      "issue_status": 200,
+      "no_store": true,
+      "first_handover": 302,
+      "replayed_handover": 409,
+      "claim_state": "collected",
+      "completion_events": 1,
+      "code_value_recorded": false
+    },
+    {
+      "case": "Cookie attributes after real login",
+      "cookies": [
+        {
+          "name": "__Host-claimsafe_csrf",
+          "secure": true,
+          "httponly": true,
+          "same_site": "Lax",
+          "path": "/"
+        },
+        {
+          "name": "__Host-claimsafe_session",
+          "secure": true,
+          "httponly": true,
+          "same_site": "Lax",
+          "path": "/"
+        }
+      ],
+      "logout_get": 405
+    },
+    {
+      "case": "Host and forwarding retest after configuration correction",
+      "unexpected_https_host": 421,
+      "unexpected_http_host": 421,
+      "normal_https": 200,
+      "forged_forwarding_status": 200
+    },
+    {
+      "case": "Stored markup and SQL input over HTTPS",
+      "claim_created": 302,
+      "raw_script_present": false,
+      "escaped_script_present": true,
+      "script_csp_block": true,
+      "search_status": 200,
+      "item_count_preserved": true
+    },
+    {
+      "case": "Account deactivation and audit permissions over HTTPS",
+      "administrator_audit": 200,
+      "student_session_before": 200,
+      "deactivation": 302,
+      "existing_student_session_after": 302,
+      "redirect_after": "/login/?next=/dashboard/"
+    },
+    {
+      "case": "Public registration privilege manipulation over HTTPS",
+      "response_status": 302,
+      "assigned_role": "student",
+      "staff_flag": false,
+      "superuser_flag": false
+    },
+    {
+      "case": "Forwarded address cannot bypass network login limit",
+      "attempts_in_this_probe": 22,
+      "last_status": 429,
+      "blocked_within_network_limit": true,
+      "forged_address_changed_each_attempt": true,
+      "all_prior_statuses": [
+        200
+      ]
+    },
+    {
+      "case": "Final hostname routing",
+      "https_allowed_host": 200,
+      "https_unexpected_host": 421,
+      "http_unexpected_host": 421,
+      "no_sni_client_with_valid_host": "HTTP/1.1 200 OK",
+      "ip_address_url": 200
+    },
+    {
+      "case": "Review of ZAP potential attribute XSS information",
+      "status": 200,
+      "value_round_trips_as_text": true,
+      "injected_autofocus_attribute": false,
+      "injected_event_handler": false,
+      "csp_disallows_scripts": true
+    },
+    {
+      "case": "Certificate hostname verification against received certificate",
+      "correct_hostname_chain_valid": true,
+      "wrong_hostname_rejected": true,
+      "cryptography_version": "50.0.2"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "profile": "https-assessment",
+  "private_access": [
+    {
+      "relative_path": "",
+      "inheritance_protected": true,
+      "allowed_principals": [
+        "SYSTEM",
+        "current_user"
+      ]
+    },
+    {
+      "relative_path": "private\\secrets.json",
+      "inheritance_protected": false,
+      "allowed_principals": [
+        "SYSTEM",
+        "current_user"
+      ]
+    },
+    {
+      "relative_path": "data\\claimsafe.sqlite3",
+      "inheritance_protected": false,
+      "allowed_principals": [
+        "SYSTEM",
+        "current_user"
+      ]
+    },
+    {
+      "relative_path": "tls\\pki\\authorities\\local\\root.key",
+      "inheritance_protected": false,
+      "allowed_principals": [
+        "SYSTEM",
+        "current_user"
+      ]
+    }
+  ],
+  "process_has_administrator_token": false,
+  "listeners": [
+    {
+      "address": "127.0.0.1",
+      "port": 9010
+    },
+    {
+      "address": "127.0.0.1",
+      "port": 8443
+    },
+    {
+      "address": "127.0.0.1",
+      "port": 8080
+    }
+  ],
+  "operating_system_trust_store_modified": false,
+  "dedicated_service_identity_created": false
+}

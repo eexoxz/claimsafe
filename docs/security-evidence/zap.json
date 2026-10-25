@@ -1,0 +1,86 @@
+{
+  "tool": "OWASP ZAP 2.17.0",
+  "target": "https://localhost:8443",
+  "authentication": "Anonymous scan; private role checks were assessed separately.",
+  "spider_urls": 17,
+  "active_scan_seconds": 25,
+  "policy": "Five active rules: SQL injection, reflected XSS, path traversal, CRLF injection and external redirect; low strength; two threads; three-minute maximum.",
+  "automation_plan_succeeded": true,
+  "raw_result_sha256": "c399a15f1bd2d57d592c039c7b1c0d4f9e88a7530c113eabcd67bd07a8265b2c",
+  "alerts": [
+    {
+      "id": "10015",
+      "name": "Re-examine Cache-control Directives",
+      "risk": "Informational (Low)",
+      "count": "5",
+      "instances": [
+        {
+          "uri": "https://localhost:8443/",
+          "method": "GET",
+          "param": "cache-control"
+        },
+        {
+          "uri": "https://localhost:8443/?q=notebook",
+          "method": "GET",
+          "param": "cache-control"
+        },
+        {
+          "uri": "https://localhost:8443/login/",
+          "method": "GET",
+          "param": "cache-control"
+        },
+        {
+          "uri": "https://localhost:8443/privacy/",
+          "method": "GET",
+          "param": "cache-control"
+        },
+        {
+          "uri": "https://localhost:8443/register/",
+          "method": "GET",
+          "param": "cache-control"
+        }
+      ]
+    },
+    {
+      "id": "10112",
+      "name": "Session Management Response Identified",
+      "risk": "Informational (Medium)",
+      "count": "3",
+      "instances": [
+        {
+          "uri": "https://localhost:8443/login/",
+          "method": "GET",
+          "param": "__Host-claimsafe_csrf"
+        },
+        {
+          "uri": "https://localhost:8443/register/",
+          "method": "GET",
+          "param": "__Host-claimsafe_csrf"
+        },
+        {
+          "uri": "https://localhost:8443/register/",
+          "method": "GET",
+          "param": "__Host-claimsafe_csrf"
+        }
+      ]
+    },
+    {
+      "id": "10031",
+      "name": "User Controllable HTML Element Attribute (Potential XSS)",
+      "risk": "Informational (Low)",
+      "count": "1",
+      "instances": [
+        {
+          "uri": "https://localhost:8443/?q=notebook",
+          "method": "GET",
+          "param": "q"
+        }
+      ]
+    }
+  ],
+  "review": {
+    "10015": "Public static assets are cacheable; sensitive responses were confirmed no-store.",
+    "10112": "Cookie-bearing authentication/registration responses were identified; this is informational.",
+    "10031": "Search input is reflected in an escaped value attribute. A quote/event-handler probe did not create attributes; CSP disallows scripts."
+  }
+}

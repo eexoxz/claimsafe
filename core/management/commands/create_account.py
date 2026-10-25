@@ -22,7 +22,7 @@ class Command(BaseCommand):
         user = User(username=options["username"], email=options["email"].lower(), role=options["role"])
         try:
             user.full_clean(exclude=["password"])
-            password = getpass.getpass("New password (12+ characters): ")
+            password = getpass.getpass("New password (15+ characters): ")
             if password != getpass.getpass("Confirm password: "):
                 raise CommandError("Passwords did not match.")
             validate_password(password, user)

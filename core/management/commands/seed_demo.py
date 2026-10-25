@@ -54,4 +54,4 @@ class Command(BaseCommand):
             submit_claim(alex, items[0].id, "Fictional demo evidence: a crescent sticker inside the left ear cup; my blue charging cable is in the case.")
             claim = submit_claim(alex, items[1].id, "Fictional demo evidence: a violet bookmark with a hand-drawn fox is in the sleeve's inside pocket.")
             review_claim(officer, claim.id, "approve", "Your description matches the withheld record. Please visit the property desk to collect it.")
-        self.stdout.write(self.style.SUCCESS("Fictional demo is ready. Credentials are in .local/demo-accounts.txt."))
+        self.stdout.write(self.style.SUCCESS(f"Fictional demo is ready. Credentials are in {settings.LOCAL_DIR / 'demo-accounts.txt'}."))

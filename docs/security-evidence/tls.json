@@ -1,0 +1,112 @@
+{
+  "tool": "SSLyze 6.3.1",
+  "target": "localhost:8443",
+  "raw_result_sha256": "425ff89c6b9870ed5c81b341d8d6b9352347818346d0a82c7e1edd8f7bb12609",
+  "protocols": {
+    "ssl_2_0": {
+      "status": "COMPLETED",
+      "supported": false,
+      "accepted_ciphers": []
+    },
+    "ssl_3_0": {
+      "status": "COMPLETED",
+      "supported": false,
+      "accepted_ciphers": []
+    },
+    "tls_1_0": {
+      "status": "COMPLETED",
+      "supported": false,
+      "accepted_ciphers": []
+    },
+    "tls_1_1": {
+      "status": "COMPLETED",
+      "supported": false,
+      "accepted_ciphers": []
+    },
+    "tls_1_2": {
+      "status": "COMPLETED",
+      "supported": true,
+      "accepted_ciphers": [
+        "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256",
+        "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+        "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
+      ]
+    },
+    "tls_1_3": {
+      "status": "COMPLETED",
+      "supported": true,
+      "accepted_ciphers": [
+        "TLS_CHACHA20_POLY1305_SHA256",
+        "TLS_AES_256_GCM_SHA384",
+        "TLS_AES_128_GCM_SHA256"
+      ]
+    }
+  },
+  "certificate_validation": [
+    {
+      "store": "Android",
+      "valid": false
+    },
+    {
+      "store": "Apple",
+      "valid": false
+    },
+    {
+      "store": "Java",
+      "valid": false
+    },
+    {
+      "store": "Mozilla",
+      "valid": false
+    },
+    {
+      "store": "Supplied CA file",
+      "valid": true
+    },
+    {
+      "store": "Windows",
+      "valid": false
+    }
+  ],
+  "weakness_checks": {
+    "tls_compression": {
+      "status": "COMPLETED",
+      "result": {
+        "supports_compression": false
+      }
+    },
+    "openssl_ccs_injection": {
+      "status": "COMPLETED",
+      "result": {
+        "is_vulnerable_to_ccs_injection": false
+      }
+    },
+    "tls_fallback_scsv": {
+      "status": "COMPLETED",
+      "result": {
+        "supports_fallback_scsv": true
+      }
+    },
+    "heartbleed": {
+      "status": "COMPLETED",
+      "result": {
+        "is_vulnerable_to_heartbleed": false
+      }
+    },
+    "robot": {
+      "status": "COMPLETED",
+      "result": {
+        "robot_result": "NOT_VULNERABLE_RSA_NOT_SUPPORTED"
+      }
+    },
+    "session_renegotiation": {
+      "status": "COMPLETED",
+      "result": {
+        "supports_secure_renegotiation": true,
+        "is_vulnerable_to_client_renegotiation_dos": false,
+        "client_renegotiations_success_count": 0
+      }
+    }
+  },
+  "trust_scope": "The supplied project CA validates the chain. Default public root stores do not trust this local CA. No Windows/browser trust-store change was made."
+}
