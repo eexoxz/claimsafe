@@ -35,6 +35,23 @@ administrator without loading demo data, see `python manage.py create_account --
 See [project scope](docs/PROJECT_PLAN.md), [security design](docs/SECURITY.md),
 [development log](docs/DEVELOPMENT_LOG.md), and [Git instructions](docs/VERSION_CONTROL.md).
 
+## Report draft
+
+The full report source is in [docs/REPORT_DRAFT.md](docs/REPORT_DRAFT.md), with versioned
+figures and an actual test summary in `docs/report-assets/`. The draft covers the verified
+local implementation and explicitly identifies unfinished deployment and assessment work.
+
+To regenerate the PDF on a machine with the optional report dependencies installed:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-report.txt
+.\.venv\Scripts\python.exe scripts/build_report.py
+```
+
+This writes a PDF, an editable Markdown copy and supporting figures to `.local/report/`.
+The PDF includes an automatically populated contents page. Its source evidence and conclusions
+must be updated when the implementation or verification results change.
+
 ## Academic ownership
 
 This repository is an original implementation. Prior student submissions are reference

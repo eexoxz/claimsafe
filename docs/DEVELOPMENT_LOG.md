@@ -32,6 +32,24 @@
 
 ## Assistance and evidence
 
+### 2026-10-25 report draft
+
+Prepared the full security report against the 2026 rubric using the established writing
+preferences. The main report contains approximately 3,630 words; its source including
+references and appendices contains approximately 4,205 words. The rendered PDF has 15 pages,
+four figures and three tables. The bibliography includes primary security documentation,
+NIST guidance and a foundational academic paper on protection principles.
+
+The report evidence baseline is d1086b5. A fresh run of all 45 tests passed in 12.129 seconds.
+That is a test-run duration, not an application performance measurement. The actual summary
+is retained in `docs/report-assets/test-summary.txt`. The report does not invent TLS, scan,
+user-study or real-campus results. It identifies the twelve-character password setting as
+a gap against NIST's single-factor password-length guidance.
+
+The report source, figures and optional PDF builder are versioned. The application code
+was not changed while preparing the report. Remaining coursework evidence and submission
+attachments are identified in the draft.
+
 Codex (OpenAI) assisted with planning, implementation, tests, documentation and local UI QA.
 The student must review the code, personalise the decisions, understand the security rules,
 and acknowledge assistance according to the assignment's Generative AI declaration.

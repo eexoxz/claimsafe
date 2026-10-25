@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.0//EN'
+  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="483.27559055118115" height="162" preserveAspectRatio="xMinYMin meet" viewBox="0 0 483 162" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>...</title>
+	<desc>...</desc>
+	<clipPath id="clip">
+		<rect x="0" y="0" width="483.27559055118115" height="162"/>
+	</clipPath>
+	<g id="group" transform="scale(1,-1) translate(0,-162)" style="clip-path: url(#clip)">
+		<g transform="">
+			<text x="6" y="147" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,294) scale(1,-1)">Claim</text>
+			<rect x="67" y="112" width="105" height="42" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
+			<text x="101.75048828125" y="130.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,260) scale(1,-1)">Pending</text>
+			<rect x="218" y="112" width="105" height="42" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
+			<text x="249.49853515625" y="130.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,260) scale(1,-1)">Approved</text>
+			<rect x="369" y="112" width="105" height="42" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
+			<text x="401.24560546875" y="130.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,260) scale(1,-1)">Collected</text>
+			<path d="M 172,133 L 218,133 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
+			<polygon points="218 133, 212 136, 212 130" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
+			<path d="M 323,133 L 369,133 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
+			<polygon points="369 133, 363 136, 363 130" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
+			<text x="183.524169921875" y="143" style="font-family: Arial; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,286) scale(1,-1)">Review</text>
+			<text x="329.6552734375" y="143" style="font-family: Arial; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,286) scale(1,-1)">Valid code</text>
+			<rect x="67" y="51" width="105" height="34" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
+			<text x="100.741943359375" y="65.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,130) scale(1,-1)">Rejected</text>
+			<path d="M 119,112 L 119,85 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
+			<polygon points="119 85, 116 91, 122 91" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
+			<text x="133" y="94" style="font-family: Arial; font-size: 7px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,188) scale(1,-1)">Not approved</text>
+			<text x="6" y="13" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,26) scale(1,-1)">Item</text>
+			<rect x="67" y="0" width="105" height="31" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
+			<text x="99.739990234375" y="12.5" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,25) scale(1,-1)">Available</text>
+			<rect x="218" y="0" width="105" height="31" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
+			<text x="250.23681640625" y="12.5" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,25) scale(1,-1)">Reserved</text>
+			<rect x="369" y="0" width="105" height="31" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
+			<text x="401.748779296875" y="12.5" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,25) scale(1,-1)">Returned</text>
+			<path d="M 172,15 L 218,15 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
+			<polygon points="218 15, 212 18, 212 12" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
+			<path d="M 323,15 L 369,15 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
+			<polygon points="369 15, 363 18, 363 12" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
+		</g>
+	</g>
+</svg>
