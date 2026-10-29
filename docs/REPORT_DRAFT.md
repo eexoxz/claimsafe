@@ -6,10 +6,6 @@ Secure Application Development and Implementation
 
 26 October 2026
 
-## Abstract
-
-ClaimSafe is a campus lost property application that supports public item discovery while keeping ownership evidence private. The project examines how a legitimate service can be misused when users request other people's records, alter their permissions or repeat an authorised action. Its design separates student, property officer and administrator responsibilities and treats collection as a controlled workflow. Django provides authentication and browser security mechanisms, while application checks restrict access to individual claims. Private evidence is encrypted with Fernet, and an expiring collection code connects an approved claim to a recorded handover. Conditional database updates and a single transaction prevent the same authorisation from completing two collections. Forty-five automated tests passed in the local Windows and SQLite environment, including access restrictions, rejected inputs and concurrent collection attempts. A separate browser walkthrough demonstrated the permitted process using fictional records. The results support the implemented application controls, although HTTPS deployment, host hardening and a broader vulnerability assessment remain necessary before operational use.
-
 ## 1.0 Introduction and System Overview
 
 ### 1.1 System Overview

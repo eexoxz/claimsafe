@@ -1,8 +1,10 @@
 # Report production notes
 
-The report is a formal coursework document. Its presentation follows the user's supplied
-FYP report: A4, one-inch margins, Times New Roman 12 pt, 1.5 body spacing and numbered
-sections. The original FYP and distinction samples remain external references, not repository
+The report is a formal coursework document. Its font, justification and neat layout follow
+the user's supplied FYP report: A4, one-inch margins, Times New Roman 12 pt and 1.5 body spacing.
+Content organisation and explanatory style follow the three security samples (Mattew Loh,
+Ong Yu Chin and Lau En Sin), subject to the current rubric. The report has no abstract.
+The original FYP and distinction samples remain external references, not repository
 content. No tourism text, sample-student text or old FYP figures are included.
 
 `REPORT_DRAFT.md` is the editable text source. `report-assets/report-template.docx` is a
@@ -50,6 +52,8 @@ and direct explanatory prose. It does not copy their wording, project content or
 The report's technical findings still concern baseline d1086b5 and its recorded 45-test run.
 Later HTTPS/MFA/backup evidence has not been incorporated in this presentation-only pass.
 The revised main text contains approximately 3,852 words using the builder's source counter.
-All 21 pages were inspected after Word export. Contents, caption lists and page numbering
-were refreshed. The exporter now invokes Word through late-bound automation to avoid a
+The current 20-page version was checked after removing the abstract and refreshing the
+contents, caption lists and page numbering. The earlier 21-page version was inspected in full;
+the remaining body pages are visually identical, with updated preliminary page numbers.
+The exporter now invokes Word through late-bound automation to avoid a
 cached Office type-library error on this machine; it still exports from the saved DOCX.

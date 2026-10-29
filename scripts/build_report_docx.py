@@ -268,12 +268,9 @@ def build(output_dir):
     paragraph(d,'Coventry Student ID 15384832','Report Front')
     p=paragraph(d,'26 October 2026','Report Front'); p.paragraph_format.space_before=Pt(36)
     prelim=d.add_section(WD_SECTION_START.NEW_PAGE); page_numbers(prelim,'lowerRoman')
-    paragraph(d,'ABSTRACT','Front Heading')
     text=SOURCE.read_text(encoding='utf-8')
     body_heading='## 1.0 Introduction and System Overview'
-    abstract=text.split('## Abstract\n\n',1)[1].split(body_heading,1)[0].strip()
-    paragraph(d,abstract)
-    d.add_page_break(); paragraph(d,'TABLE OF CONTENTS','Front Heading')
+    paragraph(d,'TABLE OF CONTENTS','Front Heading')
     field(d.add_paragraph(),'TOC \\o "1-2" \\h \\z \\u')
     d.add_page_break(); paragraph(d,'LIST OF FIGURES','Front Heading')
     field(d.add_paragraph(),'TOC \\h \\z \\c "Figure"')

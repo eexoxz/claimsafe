@@ -2,21 +2,23 @@
 
 ## Purpose and source of the writing preferences
 
-The user asked this chat to consult “Research human writing styles” or “Plan remaining FYP
-chapters” about the report's writing approach. The recent messages in “Plan remaining FYP
-chapters” establish the following preference: plain words, naturally connected sentences,
-paragraphs that develop the explanation, and no unnecessary lists or hyphens. The user has
-asked that their taught approach guide the report rather than the assistant's default voice.
+The content organisation and explanatory approach follow the three supplied security
+coursework samples: Mattew Loh, Ong Yu Chin and Lau En Sin. Learn how they introduce the
+system, discuss security issues, explain implementations with figures/code and evaluate
+the results. Use original ClaimSafe content and verified evidence, not their wording,
+project details, findings, reference lists or older assignment requirements. The current
+2026 coursework brief and marking criteria govern the required coverage.
 
-A direct handover from that chat confirmed these preferences. It also stressed preserving
-the user's meaning and qualifications, allowing longer explanations where they add substance,
-and avoiding stock introductions, repeated feature inventories and repetitive cautionary
-endings. Later user preferences take priority over mechanical word bans or sentence quotas.
+The user's FYP report is a visual formatting reference only: font, paragraph justification,
+spacing and neat arrangement. It does not determine the security report's content,
+research structure or preliminary sections. The user explicitly requested no abstract.
+The report starts with its cover, contents and caption lists, followed by the numbered
+security report sections. Do not add an abstract through the source or document builder.
 
-This guide transfers those preferences to ClaimSafe. It does not transfer the FYP's subject,
-chapter numbering, word count, results or examples. The current 2026 security assignment
-brief and marking criteria determine this report's content and scope. This is a writing plan,
-not a finished report or a record of tests that have not yet happened.
+Write in plain, naturally connected paragraphs, preserving qualifications and developing
+the explanation where useful. Avoid stock introductions, repeated feature inventories,
+unnecessary lists and brochure/workbook language. This guide records writing preferences;
+it does not establish test results or replace the coursework rubric.
 
 ## Words, sentences and paragraphs
 

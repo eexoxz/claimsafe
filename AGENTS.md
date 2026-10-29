@@ -23,5 +23,8 @@
   report layout, with no invented brochure/workbook headings. This permits those presentation
   edits and matching exports. Keep the technical evidence/content baseline frozen until the
   user authorises incorporating the later application work.
+- The three security samples (Mattew Loh, Ong Yu Chin and Lau En Sin) guide report content
+  organisation and explanation. The FYP is only a font/justification/layout reference.
+  The user explicitly requested no abstract; do not add one to the report or its builder.
 - At handoff, briefly state what changed, what was checked, the local commit identifier,
   and how to run or access the result when relevant.

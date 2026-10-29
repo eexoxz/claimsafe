@@ -167,3 +167,9 @@ the exporter to late-bound calls allowed the same saved DOCX to export correctly
 matching 21-page Word/PDF pair was rendered and every page inspected, with contents and
 caption/page fields updated. The main source count is approximately 3,852 words. Updated
 the working report copies and retained this limited style authorisation in the writing guide.
+
+The user further clarified that the three security samples govern content organisation and
+explanation, while the FYP supplies only font, justification and neat layout. Checked all
+three supplied security PDFs for an abstract heading; none was found. Removed the abstract
+from the source and builder, refreshed the contents/preliminary numbering and exported the
+matching 20-page Word/PDF pair. Main-report text and its technical evidence remain unchanged.
