@@ -202,7 +202,8 @@ def table(doc,rows):
 
 def build(output_dir):
     output_dir.mkdir(parents=True,exist_ok=True)
-    diagrams()
+    if not all((ASSETS / name).is_file() for name in ['architecture.png', 'workflow.png']):
+        diagrams()
     d=Document(TEMPLATE)
     normal=d.styles['Normal']; set_font(normal)
     pf=normal.paragraph_format
@@ -216,7 +217,7 @@ def build(output_dir):
         s.paragraph_format.line_spacing=1.5; s.paragraph_format.keep_with_next=True
         s.paragraph_format.space_after=Pt(6)
         s.paragraph_format.space_before=Pt(12 if name=='Heading 1' else 6)
-    set_font(d.styles['Title'],24,True)
+    set_font(d.styles['Title'],14,True)
     d.styles['Title'].paragraph_format.alignment=WD_ALIGN_PARAGRAPH.CENTER
     for name,size,bold in [('Report Front',12,False),('Report Subtitle',16,True),('Report Reference',11,False),('Report Table',10.5,False),('Report Code',9,False),('Front Heading',12,True),('Appendix Heading',12,True)]:
         if name not in d.styles:
@@ -258,10 +259,9 @@ def build(output_dir):
     settings=d.settings.element
     update=OxmlElement('w:updateFields'); update.set(qn('w:val'),'true'); settings.append(update)
 
-    cover=paragraph(d,'ClaimSafe','Title'); cover.paragraph_format.space_before=Pt(90)
-    cover.paragraph_format.space_after=Pt(24)
-    p=paragraph(d,'Design and Implementation of a Secure Campus Lost Property Claim and Collection System','Report Subtitle')
-    p.paragraph_format.space_after=Pt(45)
+    cover=paragraph(d,'ClaimSafe Secure Campus Lost Property Claim and Collection System','Title')
+    cover.paragraph_format.space_before=Pt(90)
+    cover.paragraph_format.space_after=Pt(48)
     paragraph(d,'Security 6000CMD and 6005CEM','Report Front')
     paragraph(d,'Secure Application Development and Implementation','Report Front')
     p=paragraph(d,'Ooi Ee Sheng','Report Front'); p.paragraph_format.space_before=Pt(36)
@@ -270,7 +270,8 @@ def build(output_dir):
     prelim=d.add_section(WD_SECTION_START.NEW_PAGE); page_numbers(prelim,'lowerRoman')
     paragraph(d,'ABSTRACT','Front Heading')
     text=SOURCE.read_text(encoding='utf-8')
-    abstract=text.split('## Abstract\n\n',1)[1].split('## CHAPTER 1',1)[0].strip()
+    body_heading='## 1.0 Introduction and System Overview'
+    abstract=text.split('## Abstract\n\n',1)[1].split(body_heading,1)[0].strip()
     paragraph(d,abstract)
     d.add_page_break(); paragraph(d,'TABLE OF CONTENTS','Front Heading')
     field(d.add_paragraph(),'TOC \\o "1-2" \\h \\z \\u')
@@ -279,7 +280,7 @@ def build(output_dir):
     p=paragraph(d,'LIST OF TABLES','Front Heading'); p.paragraph_format.space_before=Pt(24)
     field(d.add_paragraph(),'TOC \\h \\z \\c "Table"')
     body=d.add_section(WD_SECTION_START.NEW_PAGE); page_numbers(body,'decimal')
-    lines=('## CHAPTER 1'+text.split('## CHAPTER 1',1)[1]).splitlines()
+    lines=(body_heading+text.split(body_heading,1)[1]).splitlines()
     i=0; first=True; reference_mode=False
     while i<len(lines):
         line=lines[i].strip()
@@ -287,10 +288,10 @@ def build(output_dir):
             i+=1; continue
         if line.startswith('## '):
             title=line[3:]
-            if not first and (title.startswith('CHAPTER') or title in ['References'] or title.startswith('Appendix')):
+            if not first:
                 d.add_page_break()
             p=d.add_paragraph(title,'Heading 1')
-            first=False; reference_mode=title=='References'
+            first=False; reference_mode=title=='6.0 References'
             i+=1; continue
         if line.startswith('### '):
             style='Heading 2' if re.match(r'### \d+\.\d+ ',line) else 'Appendix Heading'
@@ -334,7 +335,7 @@ def build(output_dir):
     shutil.copyfile(SOURCE,output_dir/'ClaimSafe_Report_Draft.md')
     if (output_dir/'report-assets').resolve()!=ASSETS.resolve():
         shutil.copytree(ASSETS,output_dir/'report-assets',dirs_exist_ok=True)
-    main=text.split('## CHAPTER 1',1)[1].split('## References',1)[0]
+    main=text.split(body_heading,1)[1].split('## 6.0 References',1)[0]
     print(json.dumps({'docx':str(final),'main_words':len(re.findall(r"\b[\w]+(?:['’-][\w]+)*\b",main))}))
     return final
 

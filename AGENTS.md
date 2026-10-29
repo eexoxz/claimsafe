@@ -18,5 +18,10 @@
   or the report builders and exported report files. Keep new evidence in `docs/security-evidence/`
   and technical notes in separate security/deployment documents until the user authorises
   report modifications.
+- On 29 October the user authorised a report style/format correction guided by the supplied
+  security samples: conventional numbered sections, connected academic prose and a plain
+  report layout, with no invented brochure/workbook headings. This permits those presentation
+  edits and matching exports. Keep the technical evidence/content baseline frozen until the
+  user authorises incorporating the later application work.
 - At handoff, briefly state what changed, what was checked, the local commit identifier,
   and how to run or access the result when relevant.

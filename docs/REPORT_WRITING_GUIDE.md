@@ -23,9 +23,15 @@ not a finished report or a record of tests that have not yet happened.
 The user's later presentation reference is their own FYP report supplied on 26 October 2026.
 The ClaimSafe report should be a formal assignment in editable Word and matching PDF:
 A4 portrait, one-inch margins, Times New Roman 12 pt, 1.5 body spacing, justified paragraphs,
-numbered chapters and subsections, contents, caption lists and centred page numbers.
-Use Roman preliminary numbering and Arabic body numbering. Follow the security coursework's
-content rather than copying the FYP's seven chapters or its subject matter. Plain tables
+numbered sections and subsections, contents, caption lists and centred page numbers.
+Use Roman preliminary numbering and Arabic body numbering. The user's 29 October clarification
+asks for ordinary report writing and formatting learned from the supplied security samples.
+Use numbered sections such as `1.0 Introduction and System Overview`, `2.0 Security Analysis
+and Design`, `3.0 Security Implementation`, `4.0 Discussion` and `5.0 Conclusion`, followed by
+references and an appendix. Give subsections short names for their actual subject. Do not
+invent branded headings, slogans, workbook prompts, checklist pages, decorative banners or
+brochure sections. Follow the security coursework's content rather than copying the FYP's
+seven chapters or its subject matter. Plain tables
 may summarise genuine comparisons and evidence; do not turn narrative into a workbook.
 Keep development instructions, submission reminders and advice addressed to the student in
 separate project documentation. Retain a factual AI acknowledgement in the report itself.

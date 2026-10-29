@@ -150,3 +150,20 @@ user study is claimed for this phase. Redacted evidence is separate from the old
 Windows/browser trust, the user's authenticator enrolment, off-device backup/key custody,
 operator identity/retention decisions and any public institutional hosting remain user-owned
 steps. Report files/builders/exports retain their frozen revision. Local commit only; no push.
+
+### 2026-10-29 report style and format correction
+
+The user clarified that the supplied reports should guide ordinary academic prose and
+report formatting, with no brochure or workbook headings. Revised the cover to a plain
+report title, adopted conventional `1.0`/`1.1` section numbering and subject headings,
+simplified the introductory prose and access-control explanation, and placed implementation
+extracts and the AI acknowledgement under the numbered appendix. Retained the established
+A4/Times New Roman/1.5 spacing, captions, references and paragraph-based discussion.
+
+This is a presentation revision of the existing d1086b5/45-test report baseline, not an
+update to incorporate the subsequent HTTPS/MFA/backup work. No sample text or findings
+were copied. Word automation initially failed against its cached Office interface; switching
+the exporter to late-bound calls allowed the same saved DOCX to export correctly. The
+matching 21-page Word/PDF pair was rendered and every page inspected, with contents and
+caption/page fields updated. The main source count is approximately 3,852 words. Updated
+the working report copies and retained this limited style authorisation in the writing guide.
