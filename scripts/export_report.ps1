@@ -55,7 +55,22 @@ try {
     Invoke-Word $reportDocument 'Save'
     # PDF comes from the saved Word document. Use headings as PDF bookmarks.
     Invoke-Word $reportDocument 'ExportAsFixedFormat' @([IO.Path]::GetFullPath($PdfPath), 17, $false, 0, 0, 1, 9999, 0, $true, $true, 1)
-    Write-Output ('Exported ' + (Invoke-Word $reportDocument 'ComputeStatistics' @(2)) + ' pages')
+    $pages = [int](Invoke-Word $reportDocument 'ComputeStatistics' @(2))
+    $allWords = [int](Invoke-Word $reportDocument 'ComputeStatistics' @(0))
+    $bodySection = Invoke-Word $sections 'Item' @(3)
+    $bodyRange = Invoke-Word $bodySection 'Range' -Flags GetProperty
+    $bodyStart = [int](Invoke-Word $bodyRange 'Start' -Flags GetProperty)
+    $bodyEnd = [int](Invoke-Word $bodyRange 'End' -Flags GetProperty)
+    $referenceSearch = Invoke-Word $reportDocument 'Range' @($bodyStart, $bodyEnd)
+    $finder = Invoke-Word $referenceSearch 'Find' -Flags GetProperty
+    $found = Invoke-Word $finder 'Execute' @('6.0 References')
+    if (!$found) { throw 'Reference boundary missing; cannot verify the main report word count.' }
+    $referenceStart = [int](Invoke-Word $referenceSearch 'Start' -Flags GetProperty)
+    $mainRange = Invoke-Word $reportDocument 'Range' @($bodyStart, $referenceStart)
+    $mainWords = [int](Invoke-Word $mainRange 'ComputeStatistics' @(0))
+    $counts = [ordered]@{ pages=$pages; word_count_whole_document=$allWords; word_count_main_sections=$mainWords; method='Native Microsoft Word ComputeStatistics. Main sections run from body section 1.0 to before 6.0 References, including headings, tables, captions and code. Whole document includes preliminary material, references and appendix; words inside images are not counted.' }
+    $counts | ConvertTo-Json | Set-Content -LiteralPath ([IO.Path]::ChangeExtension([IO.Path]::GetFullPath($DocumentPath), '.layout.json')) -Encoding UTF8
+    Write-Output "Exported $pages pages; Word count $mainWords main / $allWords whole document"
 } finally {
     if ($null -ne $reportDocument) {
         Invoke-Word $reportDocument 'Close' @(0)

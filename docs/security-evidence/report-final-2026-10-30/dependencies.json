@@ -1,0 +1,68 @@
+{
+  "date": "2026-10-30",
+  "tool": "pip-audit 2.10.1",
+  "scope": "Installed application environment including Waitress and pip, excluding the isolated scanner environment",
+  "raw_result_sha256": "db942d0ae094615b12e604e440ad68df9d6c8129c3a7b15f305f158911ce74e8",
+  "packages": [
+    {
+      "name": "asgiref",
+      "version": "3.13.0",
+      "advisories": []
+    },
+    {
+      "name": "cffi",
+      "version": "2.1.1",
+      "advisories": []
+    },
+    {
+      "name": "colorama",
+      "version": "0.4.6",
+      "advisories": []
+    },
+    {
+      "name": "cryptography",
+      "version": "50.0.2",
+      "advisories": []
+    },
+    {
+      "name": "django",
+      "version": "5.2.18",
+      "advisories": []
+    },
+    {
+      "name": "pip",
+      "version": "26.2.2",
+      "advisories": []
+    },
+    {
+      "name": "pycparser",
+      "version": "3.12",
+      "advisories": []
+    },
+    {
+      "name": "pyotp",
+      "version": "2.10.0",
+      "advisories": []
+    },
+    {
+      "name": "qrcode",
+      "version": "8.2",
+      "advisories": []
+    },
+    {
+      "name": "sqlparse",
+      "version": "0.6.0",
+      "advisories": []
+    },
+    {
+      "name": "tzdata",
+      "version": "2026.5",
+      "advisories": []
+    },
+    {
+      "name": "waitress",
+      "version": "3.0.2",
+      "advisories": []
+    }
+  ]
+}

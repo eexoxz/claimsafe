@@ -1,44 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE svg
-  PUBLIC '-//W3C//DTD SVG 1.0//EN'
-  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
-<svg width="483.27559055118115" height="183" preserveAspectRatio="xMinYMin meet" viewBox="0 0 483 183" xmlns="http://www.w3.org/2000/svg" version="1.0" fill-rule="evenodd" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>...</title>
-	<desc>...</desc>
-	<clipPath id="clip">
-		<rect x="0" y="0" width="483.27559055118115" height="183"/>
-	</clipPath>
-	<g id="group" transform="scale(1,-1) translate(0,-183)" style="clip-path: url(#clip)">
-		<g transform="">
-			<rect x="5" y="105" width="115" height="52" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
-			<text x="44.493408203125" y="136.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,272) scale(1,-1)">Browser</text>
-			<text x="29.549951171875" y="122.0" style="font-family: Arial; font-size: 7.8px;fill: rgb(37%,37%,37%); stroke:none;" transform="translate(0,244) scale(1,-1)">Untrusted requests</text>
-			<rect x="168" y="105" width="146" height="52" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
-			<text x="200.748291015625" y="136.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,272) scale(1,-1)">Django application</text>
-			<text x="195.91767578125" y="122.0" style="font-family: Arial; font-size: 7.8px;fill: rgb(37%,37%,37%); stroke:none;" transform="translate(0,244) scale(1,-1)">Permissions and workflow</text>
-			<rect x="360" y="105" width="115" height="52" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
-			<text x="385.23974609375" y="136.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,272) scale(1,-1)">SQLite records</text>
-			<text x="376.963232421875" y="122.0" style="font-family: Arial; font-size: 7.8px;fill: rgb(37%,37%,37%); stroke:none;" transform="translate(0,244) scale(1,-1)">Private fields encrypted</text>
-			<path d="M 120,131 L 168,131 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
-			<polygon points="168 131, 162 134, 162 128" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
-			<path d="M 314,131 L 360,131 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
-			<polygon points="360 131, 354 134, 354 128" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
-			<path d="M 145,92 L 145,171 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; stroke-dasharray: 3, 3;"/>
-			<text x="113.94501953125" y="177" style="font-family: Arial; font-size: 7.6px;fill: rgb(0%,0%,0%); stroke:none;" transform="translate(0,354) scale(1,-1)">Request boundary</text>
-			<rect x="168" y="18" width="146" height="50" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
-			<text x="196.226318359375" y="48.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,96) scale(1,-1)">Local secret material</text>
-			<text x="208.922119140625" y="34.0" style="font-family: Arial; font-size: 7.8px;fill: rgb(37%,37%,37%); stroke:none;" transform="translate(0,68) scale(1,-1)">Outside Git history</text>
-			<rect x="360" y="18" width="115" height="50" rx="5" ry="5" style="stroke: rgb(85%,85%,85%); stroke-linecap: butt; stroke-width: 1; fill: rgb(96%,96%,95%); fill-rule: evenodd;"/>
-			<text x="383.99169921875" y="48.0" style="font-family: Arial-Bold; font-size: 9px;fill: rgb(9%,9%,9%); stroke:none;" transform="translate(0,96) scale(1,-1)">Property officer</text>
-			<text x="372.846142578125" y="34.0" style="font-family: Arial; font-size: 7.8px;fill: rgb(37%,37%,37%); stroke:none;" transform="translate(0,68) scale(1,-1)">Physical ownership check</text>
-			<path d="M 241,105 L 241,68 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
-			<polygon points="241 68, 238 74, 244 74" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
-			<path d="M 314,117 L 335,117 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
-			<path d="M 335,117 L 335,43 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
-			<path d="M 335,43 L 360,43 Z" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1;"/>
-			<polygon points="360 43, 354 46, 354 40" style="stroke: rgb(37%,37%,37%); stroke-linecap: butt; stroke-width: 1; fill: rgb(37%,37%,37%); fill-rule: evenodd;"/>
-			<text x="7" y="28" style="font-family: Arial; font-size: 8px;fill: rgb(37%,37%,37%); stroke:none;" transform="translate(0,56) scale(1,-1)">Local HTTP only</text>
-			<text x="7" y="15" style="font-family: Arial; font-size: 8px;fill: rgb(37%,37%,37%); stroke:none;" transform="translate(0,30) scale(1,-1)">HTTPS deployment pending</text>
-		</g>
-	</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1000" viewBox="0 0 1800 1000">
+<rect width="1800" height="1000" fill="white"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs>
+<g font-family="Times New Roman,serif" fill="black" text-anchor="middle">
+<rect x="430" y="85" width="1365" height="735" fill="none" stroke="#777" stroke-width="2"/>
+<rect x="30" y="145" width="320" height="260" fill="#f6f6f6" stroke="black" stroke-width="3"/>
+<text x="190.0" y="211" font-size="38" font-weight="bold">Browser</text>
+<text x="190.0" y="265" font-size="32">Students and staff</text>
+<text x="190.0" y="308" font-size="32">Untrusted requests</text>
+<rect x="480" y="145" width="320" height="260" fill="#f6f6f6" stroke="black" stroke-width="3"/>
+<text x="640.0" y="211" font-size="38" font-weight="bold">Caddy</text>
+<text x="640.0" y="265" font-size="32">TLS termination</text>
+<text x="640.0" y="308" font-size="32">Static files</text>
+<rect x="930" y="145" width="360" height="260" fill="#f6f6f6" stroke="black" stroke-width="3"/>
+<text x="1110.0" y="211" font-size="38" font-weight="bold">Application</text>
+<text x="1110.0" y="265" font-size="32">Waitress and Django</text>
+<text x="1110.0" y="308" font-size="32">Proxy authentication</text>
+<rect x="1420" y="145" width="360" height="260" fill="#f6f6f6" stroke="black" stroke-width="3"/>
+<text x="1600.0" y="211" font-size="38" font-weight="bold">SQLite database</text>
+<text x="1600.0" y="265" font-size="32">Encrypted private fields</text>
+<text x="1600.0" y="308" font-size="32">Claims and audit events</text>
+<rect x="480" y="555" width="320" height="225" fill="#f6f6f6" stroke="black" stroke-width="3"/>
+<text x="640.0" y="621" font-size="38" font-weight="bold">Local CA</text>
+<text x="640.0" y="675" font-size="32">Certificate and key</text>
+<text x="640.0" y="718" font-size="32">Explicit client trust</text>
+<rect x="930" y="555" width="360" height="225" fill="#f6f6f6" stroke="black" stroke-width="3"/>
+<text x="1110.0" y="621" font-size="38" font-weight="bold">Private keys</text>
+<text x="1110.0" y="675" font-size="32">Protected profile files</text>
+<text x="1110.0" y="718" font-size="32">Field and proxy keys</text>
+<line x1="350" y1="265" x2="480" y2="265" stroke="black" stroke-width="4" marker-end="url(#arrow)"/>
+<line x1="800" y1="265" x2="930" y2="265" stroke="black" stroke-width="4" marker-end="url(#arrow)"/>
+<line x1="1290" y1="265" x2="1420" y2="265" stroke="black" stroke-width="4" marker-end="url(#arrow)"/>
+<line x1="640" y1="555" x2="640" y2="405" stroke="black" stroke-width="4" marker-end="url(#arrow)"/>
+<line x1="1110" y1="555" x2="1110" y2="405" stroke="black" stroke-width="4" marker-end="url(#arrow)"/>
+<text x="1100" y="57.666666666666664" font-size="29">Protected loopback profile</text>
+<text x="415" y="213.66666666666666" font-size="26">HTTPS</text>
+<text x="415" y="343.6666666666667" font-size="26">8443</text>
+<text x="865" y="213.66666666666666" font-size="26">Loopback</text>
+<text x="865" y="343.0" font-size="24">HTTP 9010</text>
+<text x="1355" y="344.3333333333333" font-size="28">ORM</text>
+<text x="900" y="880.6666666666666" font-size="32">Database and keys are outside the static web root.</text>
+<text x="900" y="935.6666666666666" font-size="32">HTTPS ends at Caddy; internal HTTP stays on loopback.</text>
+</g></svg>

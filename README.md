@@ -56,8 +56,8 @@ for authenticator enrolment, saved-code recovery and tested offline maintenance 
 ## Report draft
 
 The full report source is in [docs/REPORT_DRAFT.md](docs/REPORT_DRAFT.md), with versioned
-figures and an actual test summary in `docs/report-assets/`. The draft covers the verified
-local implementation and explicitly identifies unfinished deployment and assessment work.
+figures and an actual test summary in `docs/report-assets/`. The draft covers the assessed
+HTTPS, staff MFA, backup recovery and key rotation implementation.
 
 To regenerate the editable Word document with the optional report dependencies installed:
 
@@ -87,5 +87,5 @@ This is a local prototype with a verified local HTTPS profile and a bounded secu
 assessment. Public deployment, browser trust, a dedicated service identity and operational
 controls such as off-device backup/key custody remain operator tasks. Mandatory staff MFA,
 saved-code recovery, encrypted snapshot restoration and key rotation are implemented and
-checked locally; they do not replace those operational decisions. The assignment report is
-frozen pending the user's further notes; new evidence is kept outside it. See the project plan.
+checked locally. See [the submission handoff](docs/SUBMISSION_HANDOFF.md) for the browser
+demonstration, current screenshots and required submission materials.

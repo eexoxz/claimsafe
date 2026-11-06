@@ -6,6 +6,7 @@ Run --export-pdf on Windows with Microsoft Word installed, or export the DOCX in
 from __future__ import annotations
 
 import argparse
+from html import escape
 import json
 from pathlib import Path
 import re
@@ -97,24 +98,36 @@ def diagrams():
         else:
             direction=1 if y>sy else -1
             draw.polygon([(x,y),(x-12,y-20*direction),(x+12,y-20*direction)],fill='black')
-    im,d=canvas(1050)
-    box(d,(55,145,490,405),'Browser',['Students and staff','Untrusted requests'])
-    box(d,(660,145,1125,405),'Django application',['Permissions and states','Validation and encryption'])
-    box(d,(1300,145,1745,405),'SQLite database',['Encrypted private fields','Claim and audit records'])
-    arrow(d,(490,265),(660,265)); arrow(d,(1125,265),(1300,265))
-    d.text((575,190),'HTTP locally',font=font(26),anchor='mm',fill='black')
-    d.text((575,335),'TLS required',font=font(26),anchor='mm',fill='black')
-    d.text((1215,335),'ORM',font=font(28),anchor='mm',fill='black')
-    d.line((580,75,580,450),fill='#777777',width=3)
-    d.text((580,42),'Request boundary',font=font(29),anchor='mm',fill='black')
-    box(d,(670,560,1125,775),'Local secrets',['Field encryption key','Django secret key'])
-    arrow(d,(895,560),(895,405))
-    box(d,(55,560,490,775),'Physical handover',['Officer checks claimant','Custody procedure'])
-    d.line([(490,660),(600,660),(600,365)],fill='black',width=4)
-    arrow(d,(600,365),(660,365))
-    d.text((900,900),'The server can decrypt evidence for authorised users.',font=font(34),anchor='mm',fill='black')
-    d.text((900,950),'The host operator remains trusted.',font=font(34),anchor='mm',fill='black')
+    im,d=canvas(1000)
+    nodes=[
+        ((30,145,350,405),'Browser',['Students and staff','Untrusted requests']),
+        ((480,145,800,405),'Caddy',['TLS termination','Static files']),
+        ((930,145,1290,405),'Application',['Waitress and Django','Proxy authentication']),
+        ((1420,145,1780,405),'SQLite database',['Encrypted private fields','Claims and audit events']),
+        ((480,555,800,780),'Local CA',['Certificate and key','Explicit client trust']),
+        ((930,555,1290,780),'Private keys',['Protected profile files','Field and proxy keys']),
+    ]
+    arrows=[((350,265),(480,265)),((800,265),(930,265)),((1290,265),(1420,265)),((640,555),(640,405)),((1110,555),(1110,405))]
+    labels=[((1100,48),'Protected loopback profile',29),((415,205),'HTTPS',26),((415,335),'8443',26),((865,205),'Loopback',26),((865,335),'HTTP 9010',24),((1355,335),'ORM',28),((900,870),'Database and keys are outside the static web root.',32),((900,925),'HTTPS ends at Caddy; internal HTTP stays on loopback.',32)]
+    d.rectangle((430,85,1795,820),outline='#777777',width=2)
+    for xy,title,lines in nodes: box(d,xy,title,lines)
+    for start,end in arrows: arrow(d,start,end)
+    for xy,label,size in labels: d.text(xy,label,font=font(size),anchor='mm',fill='black')
     im.save(ASSETS/'architecture.png',dpi=(300,300))
+    # Retain a vector source from the same graph used for the report raster.
+    svg=['<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1000" viewBox="0 0 1800 1000">',
+         '<rect width="1800" height="1000" fill="white"/>',
+         '<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"/></marker></defs>',
+         '<g font-family="Times New Roman,serif" fill="black" text-anchor="middle">',
+         '<rect x="430" y="85" width="1365" height="735" fill="none" stroke="#777" stroke-width="2"/>']
+    for (x1,y1,x2,y2),title,lines in nodes:
+        svg.append(f'<rect x="{x1}" y="{y1}" width="{x2-x1}" height="{y2-y1}" fill="#f6f6f6" stroke="black" stroke-width="3"/>')
+        svg.append(f'<text x="{(x1+x2)/2}" y="{y1+66}" font-size="38" font-weight="bold">{escape(title)}</text>')
+        for n,line in enumerate(lines): svg.append(f'<text x="{(x1+x2)/2}" y="{y1+120+43*n}" font-size="32">{escape(line)}</text>')
+    for (x1,y1),(x2,y2) in arrows: svg.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="black" stroke-width="4" marker-end="url(#arrow)"/>')
+    for (x,y),label,size in labels: svg.append(f'<text x="{x}" y="{y+size/3}" font-size="{size}">{escape(label)}</text>')
+    svg.append('</g></svg>')
+    (ASSETS/'architecture.svg').write_text('\n'.join(svg),encoding='utf-8')
     im,d=canvas(820)
     d.text((65,35),'CLAIM',font=font(38,True),fill='black')
     for xy,title in [((100,130,520,290),'Pending'),((690,130,1110,290),'Approved'),((1280,130,1700,290),'Collected'),((100,360,520,510),'Rejected')]:
@@ -167,6 +180,8 @@ def table(doc,rows):
     t=doc.add_table(rows=len(rows),cols=len(rows[0]))
     t.alignment=WD_TABLE_ALIGNMENT.CENTER; t.autofit=False
     widths={4:[2.0,.8,1.65,1.82],3:[1.85,.7,3.72],2:[2.65,3.62]}[len(rows[0])]
+    if rows[0] == ['Category', 'Evidence', 'Remaining boundary']:
+        widths = [1.85, 2.05, 2.37]
     for col,width in zip(t.columns,widths):
         col.width=Inches(width)
     borders=OxmlElement('w:tblBorders')
@@ -185,7 +200,7 @@ def table(doc,rows):
             cell=t.cell(r,c); cell.width=Inches(widths[c])
             cell.vertical_alignment=WD_CELL_VERTICAL_ALIGNMENT.CENTER
             p=cell.paragraphs[0]; p.style='Report Table'
-            if c==1 and len(row)>2:
+            if c==1 and (len(row)==4 or rows[0][1]=='Priority'):
                 p.alignment=WD_ALIGN_PARAGRAPH.CENTER
             run=p.add_run(value); run.bold=r==0
             margins=OxmlElement('w:tcMar')
@@ -202,6 +217,7 @@ def table(doc,rows):
 
 def build(output_dir):
     output_dir.mkdir(parents=True,exist_ok=True)
+    text=SOURCE.read_text(encoding='utf-8')
     if not all((ASSETS / name).is_file() for name in ['architecture.png', 'workflow.png']):
         diagrams()
     d=Document(TEMPLATE)
@@ -266,9 +282,9 @@ def build(output_dir):
     paragraph(d,'Secure Application Development and Implementation','Report Front')
     p=paragraph(d,'Ooi Ee Sheng','Report Front'); p.paragraph_format.space_before=Pt(36)
     paragraph(d,'Coventry Student ID 15384832','Report Front')
-    p=paragraph(d,'26 October 2026','Report Front'); p.paragraph_format.space_before=Pt(36)
+    report_date=next(line for line in text.splitlines() if re.fullmatch(r'\d{1,2} [A-Za-z]+ \d{4}',line))
+    p=paragraph(d,report_date,'Report Front'); p.paragraph_format.space_before=Pt(36)
     prelim=d.add_section(WD_SECTION_START.NEW_PAGE); page_numbers(prelim,'lowerRoman')
-    text=SOURCE.read_text(encoding='utf-8')
     body_heading='## 1.0 Introduction and System Overview'
     paragraph(d,'TABLE OF CONTENTS','Front Heading')
     field(d.add_paragraph(),'TOC \\o "1-2" \\h \\z \\u')
@@ -285,9 +301,8 @@ def build(output_dir):
             i+=1; continue
         if line.startswith('## '):
             title=line[3:]
-            if not first:
-                d.add_page_break()
             p=d.add_paragraph(title,'Heading 1')
+            p.paragraph_format.page_break_before = not first
             first=False; reference_mode=title=='6.0 References'
             i+=1; continue
         if line.startswith('### '):

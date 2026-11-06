@@ -26,5 +26,10 @@
 - The three security samples (Mattew Loh, Ong Yu Chin and Lau En Sin) guide report content
   organisation and explanation. The FYP is only a font/justification/layout reference.
   The user explicitly requested no abstract; do not add one to the report or its builder.
+- On 30 October the user authorised completing the substantive report update and evidence
+  integration. The earlier report-content freeze is lifted for this task. Consult “Research
+  human writing styles” for their voice, retain the security samples' organisation, no abstract,
+  and the FYP's typography/layout only. Leave genuine student declarations and browser/factor
+  ownership steps to the user; provide precise screenshot instructions where capture is blocked.
 - At handoff, briefly state what changed, what was checked, the local commit identifier,
   and how to run or access the result when relevant.

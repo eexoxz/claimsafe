@@ -89,22 +89,19 @@ citation to a generic definition. Never copy the sample reports' reference lists
 diagrams or risk scores. Confirm the lecturer's required referencing style; the 2026 brief
 does not establish every formatting rule found in older samples.
 
-Describe local test results as local test results. The initial implementation has a recorded
-run of 45 passing automated tests and a fictional browser handover. That is not evidence of
-45 penetration tests, a full OWASP assessment, real campus use or legal compliance. The test
-count and outcomes must be refreshed against the version used for the final report.
+Keep results attached to their date and assessed version. The report uses the 30 October
+regression and HTTPS account checks and dates the earlier scans and fictional browser
+walkthrough separately. Explain what each check exercised and what it established.
 
 Do not invent survey responses, participants, screenshots, scan findings, timing measurements,
 deployment results or an insecure earlier application. A new application can be designed
 securely from the beginning. Explain its identified risks, controls and verification without
 fabricating a before-and-after story.
 
-State material limits where they belong in the reasoning. The current server uses local
-HTTP; production security switches are not evidence of a working certificate or TLS setup.
-Private records are encrypted, but the application and host operator can decrypt them. Audit
-records are restricted through application routes but are not tamper-proof against a database
-administrator. Staff still make ownership decisions. Describe implemented MFA only if it is
-actually added and tested.
+State material limits where they belong in the reasoning. The HTTPS assessment validated
+the local certificate with an explicit project CA. Ordinary browser trust is a separate
+step. The application and host operator can decrypt the private records, and an operator
+with database access can alter audit records. Staff still make ownership decisions.
 
 ## Illustrative paragraph style
 

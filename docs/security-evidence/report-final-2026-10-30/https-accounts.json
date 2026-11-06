@@ -1,0 +1,84 @@
+{
+  "target": "https://localhost:8443",
+  "tls_validation": "Project CA, hostname and validity verified by requests; no bypass",
+  "method": "Selected scripted HTTPS requests using disposable fictional actors; not independent user testing or a complete penetration test",
+  "checks": [
+    {
+      "case": "staff_password_alone_cannot_open_desk",
+      "result": "passed"
+    },
+    {
+      "case": "staff_password_alone_cannot_read_private_item",
+      "result": "passed"
+    },
+    {
+      "case": "authenticator_setup_rejects_missing_csrf",
+      "result": "passed"
+    },
+    {
+      "case": "authenticator_enrolment_opens_staff_desk",
+      "result": "passed"
+    },
+    {
+      "case": "account_security_response_is_not_cacheable",
+      "result": "passed"
+    },
+    {
+      "case": "recovery_codes_not_redisplayed_on_security_page",
+      "result": "passed"
+    },
+    {
+      "case": "verified_officer_cannot_open_administrator_audit",
+      "result": "passed"
+    },
+    {
+      "case": "enrolment_totp_cannot_be_replayed_for_sign_in",
+      "result": "passed"
+    },
+    {
+      "case": "fresh_totp_completes_real_https_sign_in",
+      "result": "passed"
+    },
+    {
+      "case": "consumed_totp_cannot_open_another_session",
+      "result": "passed"
+    },
+    {
+      "case": "saved_recovery_code_completes_second_factor",
+      "result": "passed"
+    },
+    {
+      "case": "consumed_recovery_code_cannot_be_replayed",
+      "result": "passed"
+    },
+    {
+      "case": "verified_administrator_can_open_audit",
+      "result": "passed"
+    },
+    {
+      "case": "other_student_cannot_open_owner_claim",
+      "result": "passed"
+    },
+    {
+      "case": "student_can_save_recovery_codes_without_enrolling_mfa",
+      "result": "passed"
+    },
+    {
+      "case": "password_change_keeps_current_session_and_revokes_other_session",
+      "result": "passed"
+    },
+    {
+      "case": "saved_code_account_recovery_revokes_old_browser_session",
+      "result": "passed"
+    },
+    {
+      "case": "recovered_student_can_sign_in_with_new_password",
+      "result": "passed"
+    },
+    {
+      "case": "live_wsgi_profile_lease_blocks_offline_backup",
+      "result": "passed"
+    }
+  ],
+  "date": "2026-10-30"
+}

@@ -1,0 +1,9 @@
+{
+  "date": "2026-10-30",
+  "command": ".venv/Scripts/python.exe manage.py test --noinput",
+  "tests": 83,
+  "seconds": 41.767,
+  "result": "OK",
+  "raw_log_sha256": "10e6db8c7653e1c4736cd5476b30b8db0f3b4d75ff30dc81c661038cb0a89323",
+  "performance_claim": false
+}

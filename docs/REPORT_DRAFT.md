@@ -4,246 +4,271 @@ Security 6000CMD and 6005CEM
 
 Secure Application Development and Implementation
 
-26 October 2026
+30 October 2026
 
 ## 1.0 Introduction and System Overview
 
 ### 1.1 System Overview
 
-ClaimSafe is a web application for managing lost property on a campus. It allows students to browse found items, submit ownership evidence and follow the outcome of their claims. Property officers record items received into custody, review the evidence and confirm collection. The application separates public descriptions from private identifying details because publishing a serial number, engraving or description of an item's contents could help another person make a false claim. Staff approval is therefore required before an item can be collected.
+ClaimSafe is a web application for managing campus lost property. Students can find an item in the public listings, submit evidence that it belongs to them and follow their claim. A property officer records the item when it comes into custody, assesses competing claims and confirms collection. Administrators can also review security activity and manage account activation. Anyone who registers through the public form receives a student account because staff accounts must be created locally by an operator.
 
-### 1.2 System Users and Objectives
+The main problem is that information useful to a genuine owner can also help someone make a false claim. Publishing an engraving or the contents of a bag would allow another person to repeat those details. ClaimSafe therefore separates public descriptions from private identifying information. An officer compares a claimant's evidence with the withheld record before approving collection.
 
-The system has three user roles: student, property officer and administrator. A student can register an account and access their own claims. Officers can record found items, review competing claims and confirm an approved collection. Administrators can perform those operational tasks and also review security activity and control account activation. Public registration creates only a student account. Officer and administrator accounts must be created locally through a management command.
+### 1.2 Objectives and Scope
 
-The project aims to restrict access to private claims, protect identifying information and prevent an item from being collected before approval or collected more than once. It also addresses malicious input, session misuse and insufficient activity records. ClaimSafe was developed as a new application with these requirements considered during design and implementation.
+ClaimSafe needs to keep private evidence available to the staff who assess it, while restricting what other students can see. It must also protect data in transit and prevent an approved item from being handed over twice. The assessment examines both the normal workflow and requests that try to get around these restrictions, with the audit log showing how selected actions were handled.
 
-### 1.3 Project Scope
-
-ClaimSafe uses server-rendered Django pages, a SQLite database and the cryptography library. The examined version uses Python 3.12.14, Django 5.2.18 and cryptography 46.0.7 on Windows. Its scope is one campus, text descriptions and collection in person. It does not process payments, accept identity-document uploads or automatically establish legal ownership. Demonstration records are fictional, and officers remain responsible for assessing claims.
+The system uses Django 5.2.18, cryptography 50.0.2 and SQLite on Windows. Its HTTPS profile uses Caddy 2.11.7 and Waitress 3.0.2 on loopback. The application baseline is commit aaf4b89; later report revisions do not change its security implementation. Testing uses fictional records. The scope is one campus, text evidence and collection in person, without payments, identity-document uploads or automatic proof of ownership.
 
 ## 2.0 Security Analysis and Design
 
-### 2.1 System Assets and Trust Boundaries
+### 2.1 Security Risks
 
-The most sensitive application records are the identifying details withheld from public listings and the evidence supplied by claimants. Their disclosure could support an ownership fraud or reveal personal information. Credentials and session identifiers protect access to those records, while approval states and collection authorisations govern whether an item can leave custody. Audit records provide an account of the decision and the person who performed it. The security analysis consequently considers misuse by authenticated users as well as attacks from outside the service.
+A student who has signed in could change a claim identifier in the URL or send a request directly to a staff action. Someone registering could also submit fields that the public form never displays. A compromised officer account would expose more because officers can inspect identifying details and approve release. These risks make it necessary to check what each account can do after login and what authority a new account receives at registration.
 
-The browser is treated as untrusted. Hidden form fields, request identifiers and disabled buttons cannot establish a person's permissions. Authentication identifies an account, while authorisation determines whether that account may perform a particular operation on a particular record. OWASP recommends checking permissions for each request and denying access unless permission has been established (OWASP Foundation, n.d.-a). ClaimSafe applies role checks to staff functions and an ownership condition when a student requests a claim.
+Collection introduces a separate risk. A valid request could be repeated or sent concurrently, while an interrupted update could consume a code without completing the handover. Table 1 prioritises these risks according to their consequences for evidence and custody. These are qualitative design judgements rather than measured attack frequencies.
 
-Figure 1 shows the browser, application and storage boundaries. The application can decrypt private fields for authorised users, which makes the server operator a trusted party. Physical collection introduces a further boundary. The application can establish that a code belongs to an approved claim and record an officer's confirmation, but it cannot determine who is standing at the desk. Requiring that confirmation connects the software workflow to a staff responsibility without treating possession of a code as independent proof of ownership.
+Table 1 Security risks and selected controls
 
-![Figure 1 Application components and trust boundaries](report-assets/architecture.png)
+| Risk | Priority | Selected response |
+| --- | --- | --- |
+| Cross-account evidence disclosure | High | Ownership-scoped retrieval and staff authorisation |
+| Compromised staff credentials | High | Mandatory MFA, throttling and session invalidation |
+| Interception or proxy bypass | High | Validated TLS and authenticated loopback backend |
+| False or repeated collection | High | Approval states, expiring codes and atomic consumption |
+| Malicious input or displayed content | High | Forms, parameterised queries, escaping and CSRF |
+| Key loss or unauthorised file access | High | Private ACLs, encrypted snapshots and tested rotation |
+| Missing or altered activity records | Moderate | Restricted audit views; external protection remains necessary |
 
-### 2.2 Access Control
+### 2.2 Architecture and Access Control
 
-Table 1 summarises the access model. Students can read their own evidence and the staff message about their outcome. Officers can inspect private identifying information and claims, but cannot approve or confirm collection of their own claim. Administrators can restrict account access and review the audit dashboard. A staff role does not imply that every administrative operation is available.
+Students only need to retrieve their own claims, so limiting them to those records follows the principle of least privilege. ClaimSafe also checks permissions when an action is submitted, applying complete mediation to each request (Saltzer and Schroeder, 1975). This matters if an account loses access while its session is still open. The permission granted at sign-in may no longer apply.
 
-Table 1 Role and resource access
+The priorities also reflect how directly a request can affect a sensitive asset. Changing a claim identifier requires little knowledge of the implementation, while an unauthorised collection can affect physical custody. These receive high priority even though exposure is restricted to the local test environment. Audit alteration is rated moderate within the application threat model because ordinary users cannot edit those records; an operator with direct database access remains outside that protection. A real deployment would need to reassess likelihood against its users, network exposure and incident history.
+
+Figure 1 shows the implemented HTTPS profile. Caddy terminates TLS before forwarding to the guarded WSGI application. The database and keys are outside the static web root. The browser cannot establish authority through a hidden field or a disabled button; the application obtains roles, ownership and state from server records.
+
+![Figure 1 Implemented HTTPS architecture and trust boundaries](report-assets/architecture.png)
+
+OWASP recommends denying access by default and validating permission on every request (OWASP Foundation, n.d.-a). ClaimSafe combines roles with record ownership: being a student permits claims, but does not justify reading another student's evidence. Table 2 summarises the permitted operations. Staff access also requires completed MFA.
+
+Table 2 Role and resource permissions
 
 | Capability | Student | Officer | Administrator |
 | --- | --- | --- | --- |
 | Browse public listings | Yes | Yes | Yes |
-| Read private claims | Own claims | Operational claims | Operational claims |
+| Read private claims | Own | Operational claims | Operational claims |
 | Read withheld item details | No | Yes | Yes |
 | Review and confirm collection | No | Other people's claims | Other people's claims |
 | View system audit and manage activation | No | No | Yes |
 
-The item form provides separate fields for the public description and private identifying details. The public template displays only the description, while authorised staff can read the identifying details when reviewing a claim. The form also explains which information belongs in each field. This reduces the chance of publishing evidence that another person could repeat, although an officer could still enter sensitive details into the wrong field. Staff must therefore retain enough private information to assess ownership while providing a useful public description.
+Officers can inspect evidence across the campus because they need it to assess claims. The application decrypts that evidence for them, so the server operator remains trusted. A database copy alone exposes less because the fields are encrypted, but an operator who controls both the database and the keys can read or alter them.
 
-Saltzer and Schroeder (1975) describe least privilege as limiting authority to what a task requires. Here, the need to submit evidence does not justify reading another student's evidence. Role checks establish the available functions, and an ownership condition narrows the student's access within those functions. Staff access is broader because officers handle competing claims, although this also makes a compromised staff account more consequential. The design assumes that operational staff are authorised to inspect all claims within this single-campus prototype.
+### 2.3 Workflow Design
 
-### 2.3 Security Risks and Workflow Requirements
-
-The threat assessment prioritises consequences for ownership evidence and physical release. Table 2 records qualitative priorities based on the affected asset and the available request paths. These priorities express design judgement rather than measured attack frequencies. Cross-account access and repeated collection receive particular attention because a successful request could defeat the service even when login and page rendering work correctly. Compromised staff accounts and mistakes by legitimate users are considered alongside requests from unauthenticated attackers.
-
-Table 2 Prioritised threats
-
-| Threat | Priority | Reason and proposed response |
-| --- | --- | --- |
-| Reading another person's claim | High | Exposes private evidence; enforce ownership on every retrieval |
-| Skipping approval or repeating collection | High | Can release an item incorrectly; enforce state and single use |
-| Account or session compromise | High | Exposes permitted actions; strengthen authentication and sessions |
-| Injection and malicious displayed content | High | Threatens records or users; validate, parameterise and encode |
-| Network interception | High | Local HTTP does not protect transmitted credentials; deploy HTTPS |
-| Missing or altered audit records | Moderate | Weakens investigation; restrict access and improve log protection |
-
-The workflow has explicit states. An item moves from available to reserved and then returned. A claim moves from pending to approved and collected, or from pending to rejected. Approval reserves the item and closes other pending claims without revealing the successful claimant. Figure 2 shows these permitted transitions. OWASP's business logic guidance recommends modelling workflows on the server and testing attempts to skip, repeat or race their steps (OWASP Foundation, n.d.-b).
+Figure 2 separates approval from collection. Approval reserves the item and closes competing pending claims without identifying the successful claimant. Collection requires an approved claim, its current code and an officer's confirmation. Self-review and self-handover are rejected so that an officer cannot authorise their own release.
 
 ![Figure 2 Claim and item state transitions](report-assets/workflow.png)
 
-Collection requires more than a valid session. Only the approved claimant can request a code, and an authorised officer must validate that code against the same claim. Expiry limits its lifetime, while recorded consumption prevents reuse. OWASP distinguishes limited validity from accepting an authorisation only once; the final execution must enforce both (OWASP Foundation, n.d.-d). The database transaction is therefore part of the security control.
-
-### 2.4 Data Protection and Host Security
-
-Private evidence is encrypted before storage, while passwords use a dedicated password hashing mechanism. The distinction matters because staff need to recover evidence for assessment but never need to recover a user's original password. The design uses maintained library functions rather than a custom encryption algorithm. Key compromise, backup handling and authorised staff access remain separate risks.
-
-Malaysia's published personal data protection guidance identifies notice, disclosure, security, retention, integrity and access among its principles (Ministry of National Unity, n.d.). These inform the proposed handling of campus records: collect limited information, explain its purpose and restrict its audience. Whether a real deployment falls within particular legal obligations depends on the operator and processing context. A fictional prototype and a privacy checkbox do not demonstrate compliance.
-
-The environment design requires HTTPS and protected host access because application permissions cannot protect credentials intercepted in transit or files read directly from the server. A trusted certificate must identify the intended service, and its application identity should have access only to the files required to run it. This extends the same principle of limited authority from individual application users to the host environment.
+The server rejects invalid or repeated transitions. The officer still checks who is collecting the item because a valid code only authorises the collection step.
 
 ## 3.0 Security Implementation
 
-### 3.1 User Registration and Authentication
+### 3.1 Password Protection and Login Throttling
 
-Registration uses an explicit field list and assigns the student role on the server. Officer and administrator accounts are created through a management command with an interactively entered password. This separates public account creation from privileged provisioning. The registration test submits administrator and staff parameters deliberately, then checks that the resulting account is still a student without elevated framework flags. The result verifies the server's decision independently of the fields displayed by the form.
+Registration uses an explicit field allowlist and assigns the student role server-side. A test submits administrator parameters and verifies that the resulting account remains a student without elevated framework flags. Privileged provisioning uses a management command rather than public registration.
 
-Passwords are processed through Django's password API, whose default storage uses salted PBKDF2 with SHA-256 (Django Software Foundation, n.d.-b). Tests confirm that the database value differs from the submitted password and that normal verification succeeds. The configured validators reject common, numeric and account-similar passwords and require twelve characters. The application delegates password storage and verification to the framework so that authentication does not depend on a custom reversible credential field.
+Django stores passwords as salted PBKDF2 hashes (Django Software Foundation, n.d.-b). ClaimSafe originally required twelve characters. The minimum was raised to fifteen because students can use a password as their only factor, and fifteen is NIST's minimum for that case (NIST, 2025). The form also rejects common passwords, all-numeric passwords and values too similar to account details.
 
-Login attempts are limited through database counters keyed from account or network identifiers using a keyed hash. The account window allows five attempts in fifteen minutes, while the network window allows thirty. Requests already blocked by the network limit do not allocate additional account counters. Failed attempts and throttling outcomes generate audit events without recording submitted passwords. These limits also affect legitimate repeated attempts and require operational review before real use.
+Login counters persist in the database. Within fifteen minutes, the account limit permits five attempts and the network limit permits thirty. The counters use identifiers derived with HMAC so they can track repeated attempts without storing the submitted usernames and addresses in those rows. Once the network is blocked, further requests from it cannot create new account counters. A legitimate user can also hit a limit, so the error explains when to retry.
 
-Django changes the session identifier at login, and logout invalidates the session. ClaimSafe adds an authentication timestamp and rejects sessions older than eight hours, while configured session expiry provides a thirty-minute inactivity boundary. Session cookies use HttpOnly and SameSite settings. Automated checks cover session rotation, logout and absolute expiry. Deactivated accounts also lose authenticated access on subsequent requests. Secure cookie transmission remains dependent on the unfinished HTTPS deployment.
+### 3.2 Multi-Factor Authentication and Recovery
 
-### 3.2 Authorisation and Access Control
+Password-only staff sessions cannot open private records or operational pages. Officers and administrators must enrol a time-based authenticator; students may enable one voluntarily. Setup requires the current password, generates its QR locally and binds the pending secret to the initiating browser for ten minutes. The database stores the secret encrypted and the setup handle as a digest.
 
-Claim retrieval is scoped before a private record is returned. A student lookup includes the authenticated claimant, while an officer enters through the staff permission check. Requesting another student's identifier therefore produces a generic unavailable-page response. The corresponding test signs in as a different student, requests the exact claim and checks both the response status and absence of private evidence. This addresses an object access risk that would remain if the application checked only whether the requester had logged in.
+PyOTP generates six-digit codes in thirty-second steps. The implementation accepts the current step and one adjacent step on either side to accommodate clock differences. A conditional counter update consumes each accepted step once, including concurrent requests. This addresses PyOTP's guidance to protect secrets, use HTTPS, throttle attempts and reject replay (PyOTP, n.d.).
 
-Registration, claim status and officer permissions are never accepted from client assertions. State-changing operations require POST, and staff routes reject student accounts even when called directly. Officers cannot open the administrator audit view or change account activation. Administrators cannot deactivate themselves or another administrator through the provided route. The database supplies an additional unique constraint so that an item cannot have two approved or collected claims.
+Each of the ten recovery codes contains 128 random bits. The user sees the codes when they are created, and the database keeps only digests tied to that user. An unused code can complete MFA or authorise full recovery with a new password. Full recovery resets authenticator enrolment and revokes saved codes and existing sessions, while any account suspension still applies. If a user loses every factor, an operator has to verify their identity before restoring access.
 
-### 3.3 Input Validation and Error Handling
+The replay check in core/account_security.py uses the account's current version and last accepted counter.
 
-Django forms constrain the values expected by each operation. Evidence must contain between twenty and 2,000 characters, public descriptions have a 300-character limit, and future found dates are rejected. These rules keep records meaningful and bounded. A claimant still needs enough space to explain a distinctive detail, so validation is based on the expected data rather than a short list of prohibited characters.
+```python
+accepted = AccountSecurity.objects.filter(
+    user=user, version=state.version,
+    last_totp_counter__lt=counter,
+).update(last_totp_counter=counter) == 1
+```
 
-Database lookups use Django's object relational mapper (ORM) rather than concatenating submitted text into SQL. Django's security documentation explains how parameterised queries keep supplied values separate from query structure (Django Software Foundation, n.d.-c). A regression test submits SQL-like search input, observes no matches and confirms that the item table remains intact. The test exercises the search path used by the application and preserves the database assertion as evidence of its outcome.
+Checking a code and then recording it in separate operations would leave time for another request to reuse it. Here, success depends on one conditional update inside the transaction. The concurrent test starts two database connections together and expects exactly one acceptance. The HTTPS sequence also checks the practical consequence: a second browser remains unable to open the staff desk after submitting the consumed code.
 
-Templates retain automatic escaping, and user text is not marked as trusted HTML. The stored-script test places script-like text in encrypted evidence and confirms that its displayed response contains encoded markup. A Content Security Policy also disallows script execution. Django's cross-site request forgery (CSRF) middleware protects submitted forms, and a test using enforced CSRF checks rejects a staff review without its token. Custom error pages avoid sending tracebacks to visitors. These controls complement one another rather than making validation a substitute for output encoding or authorisation.
+### 3.3 Session Management and Authorisation
 
-### 3.4 Data Protection and User Education
+Django rotates sessions during authentication, and the application enforces a thirty-minute inactivity boundary and eight-hour absolute lifetime. Sensitive security changes recheck the current account state. Password changes retain the current valid session through update_session_auth_hash while other sessions become invalid, following Django's documented behaviour (Django Software Foundation, n.d.-c).
 
-Identifying details, claim evidence and review messages are encrypted with Fernet before they are written to the database. Fernet combines AES-128-CBC encryption with HMAC-SHA256 authentication and random initialisation values (Python Cryptographic Authority, n.d.). The application delegates the cryptographic construction to the library. A test verifies recovery of the original evidence and rejection of a modified encrypted value.
+An MFA proof carries the account's credential version. A security reset increments that version, so a proof issued before the reset is no longer accepted. The application also checks whether the account has been deactivated, which prevents someone from continuing to use an open session after access is withdrawn.
 
-Local setup generates a field encryption key independently of Django's secret key. It does not overwrite existing key material and refuses to generate replacement keys beside an existing database missing its secrets. The keys, database, demonstration passwords and virtual environment are excluded from Git. This prevents accidental version-control disclosure, although those files remain within the same local checkout area. Their host permissions and backup separation have not been independently established.
+Student claim retrieval includes the authenticated claimant in its lookup. Requesting another student's identifier returns a generic 404 without the evidence. Officers cannot open administrator audit or activation functions. State-changing routes require POST and repeat permission checks; hiding a control in the interface is not treated as an access restriction.
 
-The privacy page explains the data collected, authorised audiences and the limits of encryption. Forms warn against submitting passwords, device PINs, payment information or identity numbers. The application deliberately excludes document uploads, reducing the sensitive information required to make a claim and avoiding a separate file-handling workflow. This makes user education part of the point where evidence is requested, rather than relying only on a privacy page that a student may not open.
+The ownership filter in core/views.py narrows the records before the application retrieves the requested claim.
 
-### 3.5 Claim Approval and Collection
+```python
+if not request.user.is_officer:
+    claims = claims.filter(claimant=request.user)
+claim = claims.filter(pk=pk).first()
+```
 
-Approval is performed inside a database transaction. The service checks the reviewer, rejects self-review and changes an available item to reserved using a conditional update. If that update fails, approval stops. A unique winning-claim constraint provides a second check on the resulting records. The application then closes competing pending claims with a neutral message. This maintains a consistent outcome without publishing another claimant's identity.
+The test requests a claim that exists and belongs to another student, then checks that the response is 404 and the evidence is absent. A separate test checks that the owner can open their own claim. Together these results show that the response depends on ownership, even when the requester knows a valid identifier.
 
-An approved claimant can generate a collection code from twenty-four random bytes, providing 192 bits of random input before encoding. The database stores its SHA-256 digest rather than the code itself. It belongs to one claim, expires after fifteen minutes and is shown only in the generating response, which is marked no-store. Issuing another code replaces the earlier digest. This lets a student recover from a lost code without keeping multiple valid authorisations for the same collection.
+### 3.4 Input Validation and Output Protection
 
-The officer must provide that code and confirm the physical handover. The transaction conditionally consumes an unused, unexpired matching digest, changes the approved claim to collected, changes the reserved item to returned and records the completed collection. Any failed required update rolls the transaction back. Figure 3 records the resulting state during a fictional browser walkthrough; it illustrates the completed workflow rather than proving physical ownership.
+Django forms reject malformed or excessive input before workflow services act. Claim evidence requires twenty to 2,000 characters, public descriptions are limited to 300, and future found dates are rejected. Service checks repeat important constraints because requests need not originate from the displayed form.
 
-![Figure 3 Fictional collection completed through the browser](report-assets/handover.jpg)
+ClaimSafe passes submitted values through Django's ORM so the database treats them as values within the query. Valid text can still contain markup, so the templates keep automatic escaping and quote attributes when displaying it. Disabling escaping or constructing a query unsafely would remove the relevant protection (Django Software Foundation, n.d.-d).
 
-SQLite is configured to use IMMEDIATE transactions. This acquires the write reservation before the transaction's decision reads, while conditional updates still verify the expected state. Django documents that SQLite does not implement SELECT FOR UPDATE row locking, so relying on that mechanism here would be misleading (Django Software Foundation, n.d.-a). The concurrent test uses separate connections and a shared start barrier. One collection succeeds, the other is rejected, and one completion event remains.
+CSRF middleware checks form tokens and origins. Enforced-CSRF tests reject a missing token, while selected HTTPS requests also rejected a foreign origin with a valid token. A script-like evidence submission was displayed as escaped text. CSP disallows scripts and embedding, and generic errors omit tracebacks. The tests establish these behaviours on examined paths, not immunity against every payload.
 
-### 3.6 Logging and Analytics
+### 3.5 Secure Communication and Host Protection
 
-The audit model records the actor, action, target, outcome and timestamp. Events include login failures, access denials, private evidence access, claim decisions and collection completion. Students see their own activity, while the system audit dashboard is restricted to administrators. It provides outcome filtering and totals for recorded events, denied attempts and authorised handovers.
+The HTTPS profile redirects HTTP on port 8080 to localhost:8443. Caddy presents a local certificate; Waitress listens privately on 127.0.0.1:9010. All configured listeners remain on loopback. A random proxy credential is required before Django receives a request and is removed from the environment before application error handling. Forged forwarding headers alone therefore cannot bypass the backend boundary.
 
-Passwords, collection codes and evidence text are excluded from these events. This follows OWASP's distinction between recording security activity and exposing secrets through logs (OWASP Foundation, n.d.-c). Figure 4 shows the dashboard during the fictional walkthrough; its totals represent that capture, not a measured attack rate. The database remains modifiable by its operator, so restricted dashboard access does not provide an independently tamper-proof audit trail.
+Production cookies are Secure, HttpOnly and SameSite=Lax, using the __Host- prefix and Path=/. Sensitive responses return no-store. Host validation runs on every request, while the proxy rejects unexpected hostnames. An initial empty success response for an unexpected Host was corrected; retesting returned 421 instead.
 
-![Figure 4 Restricted audit dashboard during the fictional walkthrough](report-assets/audit.jpg)
+Windows profile ACLs permit the current user and SYSTEM. Database, key and TLS directories are separate from served static files, and the verified processes did not hold an administrator token. This is scoped local hardening, not a dedicated service account.
 
-### 3.7 Secure Communication and Host Security
+TLS protects the connection from the browser to Caddy, and the HTTP hop from Caddy to Waitress stays on loopback. A client still needs to verify the certificate's chain, hostname and validity period. Caddy's internal CA needs to be trusted explicitly by the client (Caddy, n.d.). The assessment succeeded when it supplied the project CA and used the correct hostname, and failed with the wrong hostname or default public trust. The ordinary browser also rejected the certificate because trust had yet to be configured. The warning was left in place and the system trust store was left as configured.
 
-The examined server was bound to 127.0.0.1 and used HTTP for local development. DEBUG was disabled, allowed hostnames were restricted, and responses included framing, content-type and content-policy protections. A production settings switch enables HTTPS redirection, Secure cookies and HTTP Strict Transport Security (HSTS). However, no deployed certificate, trusted Transport Layer Security (TLS) endpoint or hardened production server has been verified. Those settings cannot be presented as completed secure communication.
+### 3.6 Data Encryption and Recoverable Backups
 
-The production switch concerns application responses and cookie policy. It does not install a server certificate or restrict operating-system access to key files. TLS termination and host permissions therefore remain separate implementation tasks. Their verification needs to examine the client connection and the application identity's file access, including whether proxy forwarding headers are accepted only from a trusted intermediary.
+Identifying details, claim evidence, review messages and authenticator secrets are encrypted before storage. Fernet provides authenticated encryption, using AES-128-CBC with HMAC-SHA256. Its library also exposes token creation time, and anyone holding the key can decrypt or forge tokens (Python Cryptographic Authority, n.d.). Passwords remain hashes because the service never needs to recover their original values.
 
-### 3.8 Security Testing and Results
+Field keys are generated independently of Django's signing key. Setup refuses replacement keys beside an existing database with missing secrets, avoiding silent loss of readable evidence. Keys, credentials and databases are excluded from Git.
 
-The implementation examined in this report is repository commit d1086b5. On 26 October 2026, the Django test runner completed forty-five tests successfully using a separate SQLite database. Table 3 selects results that assess permissions and workflow failures. These automated regression tests exercise application behaviour and assertions rather than measuring production performance. The complete test source records the setup and expected database outcomes for each case.
+Offline snapshots encrypt the database and matching secrets together under an independent backup key. Restore requires a new destination and verifies authentication, integrity and decryption before exposing the profile. It revokes sessions, collection grants and recovery codes, clears pending MFA and regenerates signing/proxy secrets. Later account changes and physical handovers still require reconciliation because an older snapshot cannot contain them.
 
-Table 3 Selected automated checks from the passing test run
+Rotation starts with a verified snapshot. The new primary key is saved alongside the old keys before the encrypted fields are rewritten in a transaction, so existing records remain readable during the change. The fallback keys can be retired once the new key alone decrypts every field. MultiFernet preserves token timestamps through rotation (Python Cryptographic Authority, n.d.). A shared profile lease prevents the server and maintenance tools from using the profile at the same time.
+
+Recovery was tested against a separate copy so that a failed exercise would leave the original database intact. Tests checked that a wrong key or a tampered archive is rejected before a usable destination appears. The rotation rollback test deliberately fails final verification and then checks that the original ciphertext is still readable with the retained key ring. Off-device storage is still an operator task because a backup is unusable if its independent key is lost.
+
+### 3.7 Claim Approval and Collection
+
+Approval conditionally changes an available item to reserved inside a transaction. A database constraint permits only one approved or collected claim per item. If a competing request has already changed the state, approval stops instead of overwriting it.
+
+Only the approved claimant can generate a collection code. It contains 192 bits of random input, expires after fifteen minutes and is stored as a SHA-256 digest. Reissuing replaces the previous digest. At handover, the officer supplies the code and confirms the claimant. Consumption, claim/item transitions and the completion event commit together; failure rolls back the operation.
+
+Django documents that SQLite does not implement SELECT FOR UPDATE row locks (Django Software Foundation, n.d.-a). ClaimSafe therefore uses IMMEDIATE transactions and conditional writes. In a test with two database connections trying to consume the same code, one collection succeeded, the other failed, and the audit log recorded a single completion. Appendix 7.1 shows the condition the update has to satisfy.
+
+Figure 3 records the initial browser walkthrough on 25 October. It illustrates the collection interface; current replay and concurrency behaviour are supported separately by regression and HTTPS evidence.
+
+![Figure 3 Collection confirmation in the initial prototype walkthrough](report-assets/handover.jpg)
+
+### 3.8 Logging Privacy and User Education
+
+Audit events record actor, action, target, outcome and timestamp for login failures, denied access, evidence views, review decisions, security changes and handovers. Students see their own history; administrators see system activity, filters and counts. Figure 4 shows the initial audit interface, whose captured totals are demonstration records rather than an attack-rate measurement.
+
+![Figure 4 Administrator audit interface in the initial prototype walkthrough](report-assets/audit.jpg)
+
+Logs exclude passwords, evidence, authenticator secrets and submitted codes. OWASP advises excluding authentication secrets and other sensitive data from application logs (OWASP Foundation, n.d.-b). Restricted dashboard access helps operational review, although a database administrator can still alter the underlying audit records.
+
+The privacy page explains collection purposes, audiences, recovery and encryption limits. Forms warn against identity numbers, device PINs and payment information. These choices reflect notice, security, disclosure and retention concerns described by Malaysia's Ministry of National Unity (n.d.). Applicability and operational obligations require assessment for the actual institution; fictional testing does not establish legal compliance. Expired sessions, counters and pending enrolments can be pruned, but general retention and deletion procedures remain unresolved.
+
+### 3.9 Security and Vulnerability Testing
+
+The assessment combined application tests with selected requests against an isolated HTTPS profile using fictional accounts. On 30 October, 83 automated tests passed in 41.767 seconds, the recorded duration for that run. A further 19 HTTPS account checks passed with certificate validation. Table 3 gives selected outcomes, with the setup and results available in the source and redacted evidence.
+
+Table 3 Selected application and recovery results
 
 | Check | Observed result |
 | --- | --- |
-| Student requests another student's claim | Generic 404 response; evidence absent |
-| Registration supplies administrator fields | Account remains a student |
-| Script-like evidence is displayed | Markup encoded; script execution disallowed |
-| Staff review omits a CSRF token | Request rejected with status 403 |
-| Expired, replaced or wrong-claim code is used | Collection rejected |
-| Failed final state update | Code consumption and claim update rolled back |
-| Two connections collect the same claim | One success, one rejection, one completion event |
-| Account is deactivated with an existing session | Authenticated access denied on the next request |
+| Cross-account claim request | 404; private evidence absent |
+| Privileged registration parameters | Student role retained |
+| Missing CSRF token or foreign origin | 403 |
+| Password-only staff session | Redirected to MFA; desk inaccessible |
+| Reused TOTP or recovery code | Rejected; second session remained blocked |
+| Concurrent TOTP or collection requests | One successful consumption |
+| Password change or account recovery | Older sessions invalidated |
+| Wrong backup key or modified archive | Restore rejected without destination |
+| Isolated restore and rotation | 24 encrypted values preserved |
 
-Browser observation separately exercised student and officer sign-in, code generation, a fictional handover and the administrator dashboard. The home layout was also inspected at desktop size and a 390-pixel mobile viewport. These observations establish visible behaviour in that environment; no independent usability study or physical campus trial was conducted.
+The backup exercise on 26 October restored a real fictional database into a separate profile, rotated its 24 encrypted values and retired the old key. Fresh application processes still decrypted every value. Source database and key hashes were unchanged. Unit tests additionally cover failed rotation rollback, existing-output refusal and cross-process leases.
 
-These results provide a regression baseline for further assessment. OWASP's testing guide offers more specific activities for examining authentication, permissions and workflow misuse beyond the existing cases (OWASP Foundation, n.d.-e). The scope of that remaining assessment and its relationship to the current evidence are considered in Section 4.3.
+The earlier assessment at commit 5339995 included anonymous OWASP ZAP 2.17.0 scanning of seventeen URLs with five selected active rules. It returned three informational alert types and no low, medium or high alerts. Review distinguished cacheable static files and escaped attribute text from sensitive responses. SSLyze 6.3.1 accepted TLS 1.2/1.3 and rejected older protocols; the supplied CA validated, while public trust stores did not. These are revision-specific results, not a scan of every later MFA endpoint.
+
+The installed dependency audit initially returned seven records representing four distinct advisories for cryptography 46.0.7. Updating to 50.0.2 preserved readable evidence. The 30 October pip-audit run examined twelve installed application packages and returned no known advisories. Bandit's latest code assessment retained twelve findings: empty secret-reset values, fixed no-shell maintenance calls and a checksum-verified HTTPS downloader. Each was reviewed rather than silently suppressed. No direct Fernet exploit was demonstrated.
+
+The selected request checks varied credentials, roles, identifiers, origins and supplied headers independently. Earlier collection probing returned a redirect for the first handover and 409 for its replay, with one completion event in storage. Forged forwarding addresses did not avoid network throttling. Public requests for the key file, Git metadata and source paths returned 404. These observations connect the controls to attempted misuse rather than relying on the normal interface alone. Retained manifests distinguish these earlier cases from the refreshed account checks.
 
 ## 4.0 Discussion
 
-### 4.1 Evaluation of the Security Controls
+### 4.1 Evaluation and Findings
 
-The results support the main application boundaries. A student cannot obtain another student's evidence by changing the claim identifier, and an officer needs the expected claim state and code to complete a handover. The concurrent test is particularly relevant because it examines two requests that are individually plausible but invalid when both attempt the same release. Keeping token consumption and the related records in one transaction prevents a partially completed operation from being treated as a successful collection. The browser walkthrough separately shows that a permitted collection remains possible through the interface.
+The account and collection tests show why the application needs several checks after a user signs in. An authenticated student was still unable to retrieve someone else's evidence, and an officer with only a password could not open operational records. Once a claim was approved, the server allowed one valid handover and rejected reuse of the code. This kept the legitimate workflow available while enforcing the account and collection restrictions.
 
-Controlled disclosure also affects convenience. Withheld details can make an item harder to recognise, and staff review delays collection compared with automatic matching. Publishing more evidence would reduce the information available for distinguishing a genuine owner from another interested person. The chosen workflow therefore gives staff a private comparison rather than treating a public match as sufficient. Someone who already knows the identifying details could still make a convincing claim, which preserves a role for staff judgement and custody procedures.
+The assessment used OWASP Top 10 2025 to organise access, configuration, supply-chain, cryptographic, injection, design, authentication, integrity, logging and exceptional-condition concerns (OWASP Foundation, 2025). Coverage varies. Request tests directly examine access and authentication, while dependency tools identify reported package weaknesses. An anonymous scan cannot establish the security of authenticated workflows, and reviewed static warnings are not proof that all code is safe.
 
-SQLite made transaction behaviour a concrete design issue. Conditional updates and IMMEDIATE transactions produced the required outcome in the local tests, but SQLite serialises writers. The result does not establish capacity for a busy campus service. Moving to another database would require the locking and failure behaviour to be reviewed and the concurrency tests repeated. This reflects a wider lesson from the implementation: a security API needs to be understood in the environment where it is actually used.
+Table 4 connects each category to the available evidence and a remaining boundary. This avoids treating a list of installed protections as evidence that an entire vulnerability category has been eliminated.
 
-### 4.2 Limitations
+Table 4 OWASP Top 10 2025 evidence and limitations
 
-The password setting is a concrete improvement area. ClaimSafe currently accepts twelve-character passwords without MFA. NIST's 2025 guidance specifies at least fifteen characters for passwords used as a single authentication factor (NIST, 2025). That guidance is a technical benchmark rather than a statement of this application's legal obligations. Increasing the minimum, reviewing compromised-password screening and introducing MFA for privileged accounts would strengthen the authentication design.
+| Category | Evidence | Remaining boundary |
+| --- | --- | --- |
+| A01 Broken Access Control | Ownership, role and direct-request checks | Broad officer access remains trusted |
+| A02 Security Misconfiguration | Host rejection, private ACLs, proxy checks | Dedicated service identity not provisioned |
+| A03 Software Supply Chain Failures | Dependency update and repeat audit | Operating system and all tools not audited |
+| A04 Cryptographic Failures | TLS validation, encryption and rotation | Host operator holds decryption capability |
+| A05 Injection | Query, markup and selected scanner probes | Inputs and payload coverage are bounded |
+| A06 Insecure Design | Approval states and concurrent collection tests | Physical ownership still needs judgement |
+| A07 Authentication Failures | MFA replay, recovery and session checks | TOTP remains susceptible to phishing |
+| A08 Software or Data Integrity Failures | Authenticated snapshots and restore verification | Later custody/account changes need reconciliation |
+| A09 Logging and Alerting Failures | Restricted audit and secret-exclusion checks | No independent log sink or alerting |
+| A10 Mishandling of Exceptional Conditions | Rollback, corrupt-archive and error tests | Resource-exhaustion coverage remains limited |
 
-Other gaps concern operation over time. The prototype has no protected external log copy, automated alerting, tested backup recovery or implemented key rotation. Old rate counters also require periodic cleanup. The privacy notice identifies data use but is not accompanied by an established retention schedule or complete deletion and correction process. These matters should be resolved with the intended operator before processing real records.
+Two problems appeared during verification on Windows. SQLite connections stayed open after transactions and prevented file cleanup, which worked once the connections were closed explicitly. Windows also created directory grants that had to be removed before the launcher accepted the profile permissions. Both problems affected the local operating environment and only became visible when the recovery and launch procedures were exercised.
 
-The OWASP Top 10 2025 provides a useful classification of these concerns, including access control, injection, configuration and logging (OWASP Foundation, 2025). The targeted checks address particular request paths within those areas. An assessment must still examine the remaining paths and configuration, with findings tied to reproducible actions and the affected version.
+### 4.2 Limitations and Future Improvements
 
-### 4.3 Future Improvements
+Staff judgement remains necessary: someone who already knows identifying details may submit a convincing claim. Operational staff can inspect campus-wide evidence, while the host operator controls decryption and audit storage. TOTP improves password protection but remains susceptible to phishing and depends on clock accuracy. Recovery codes require private storage, and losing every code/device needs an agreed identity-review process.
 
-Verified HTTPS and host protection should precede use with real records. The next assessment should combine manual attempts to alter identifiers and workflow requests with an automated web scan and dependency vulnerability audit. Findings need an affected version, reproducible steps, a justified correction and a retest. The current forty-five tests can then check that those changes preserve the existing permission and collection boundaries. No complete manual security assessment, web vulnerability scan or dependency vulnerability audit has yet been carried out.
-
-After these immediate gaps, recovery and operational controls need practical exercises. A protected backup should be restored and its evidence decrypted successfully; key rotation should preserve access to existing records. Retention and deletion procedures should be agreed with the intended operator. External audit protection and useful alerts would improve investigation of staff misuse. These improvements follow from the application's trust assumptions and current coverage, extending the evaluation from individual requests to the operation of the service over time.
+The immediate operational priorities are browser CA trust, the user's own factor enrolment and separate off-device custody of backup archives and keys. Public hosting and a dedicated service identity require an operator-selected environment. Retention/deletion procedures and an independently protected audit destination should follow. A future assessment should extend authenticated scanning and test changes to database or hosting configuration. These improvements address identified boundaries; adding unrelated features would not strengthen the existing evidence.
 
 ## 5.0 Conclusion
 
-ClaimSafe implements a campus lost-property workflow in which public discovery is separated from private ownership assessment. Students can submit and follow their own claims, officers can assess evidence and confirm another person's collection, and administrators can inspect security activity and restrict account access. The application's distinctive security requirement is that approval and physical handover must remain controlled even when a user sends requests outside the visible interface.
+ClaimSafe provides a working lost-property workflow with role and ownership restrictions, staff MFA, protected communication, encrypted evidence and controlled collection. Testing supports the specified access, replay, concurrency and recovery behaviour within the examined Windows/SQLite environment.
 
-The local implementation combines framework authentication, ownership checks, validated forms, escaped output, encrypted private fields and recorded security events. Its collection service binds an expiring code to an approved claim and changes the related records within one transaction. Forty-five automated tests passed, including a two-connection collection case, and a fictional browser walkthrough demonstrated a permitted handover.
-
-These results support the implemented controls within the local Windows and SQLite environment. HTTPS deployment, host hardening and broader manual and automated assessment remain the main unfinished areas. Completing them will extend the evidence from the implemented application to the environment in which a real campus service would operate.
+Private profile permissions restrict access to local files, and the guarded loopback backend limits how requests reach the application. Together with TLS, these controls address the secure-environment objective. The tests of legitimate and invalid requests show how the application enforces the security rules during a working handover. Before real campus use, the institution would still need to configure browser trust, provision user-owned factors and agree how to operate the service.
 
 ## 6.0 References
 
-Django Software Foundation (n.d.-a) Databases. Available at: https://docs.djangoproject.com/en/5.2/ref/databases/ (Accessed: 25 October 2026).
+Caddy (n.d.) Automatic HTTPS. Available at: https://caddyserver.com/docs/automatic-https (Accessed: 30 October 2026).
 
-Django Software Foundation (n.d.-b) Password management in Django. Available at: https://docs.djangoproject.com/en/5.2/topics/auth/passwords/ (Accessed: 25 October 2026).
+Django Software Foundation (n.d.-a) Databases. Available at: https://docs.djangoproject.com/en/5.2/ref/databases/ (Accessed: 30 October 2026).
 
-Django Software Foundation (n.d.-c) Security in Django. Available at: https://docs.djangoproject.com/en/5.2/topics/security/ (Accessed: 25 October 2026).
+Django Software Foundation (n.d.-b) Password management in Django. Available at: https://docs.djangoproject.com/en/5.2/topics/auth/passwords/ (Accessed: 30 October 2026).
 
-Ministry of National Unity (n.d.) Personal Data Protection. Available at: https://www.perpaduan.gov.my/index.php/en/services/other-services/e-participation/personal-data-protection (Accessed: 25 October 2026).
+Django Software Foundation (n.d.-c) Using the Django authentication system. Available at: https://docs.djangoproject.com/en/5.2/topics/auth/default/ (Accessed: 30 October 2026).
 
-National Institute of Standards and Technology (NIST) (2025) Digital Identity Guidelines Authentication and Authenticator Management. NIST SP 800-63B-4. Available at: https://pages.nist.gov/800-63-4/sp800-63b.html (Accessed: 25 October 2026).
+Django Software Foundation (n.d.-d) Security in Django. Available at: https://docs.djangoproject.com/en/5.2/topics/security/ (Accessed: 30 October 2026).
 
-OWASP Foundation (2025) OWASP Top 10 2025. Available at: https://top10.owasp.org/2025/ (Accessed: 25 October 2026).
+Ministry of National Unity (n.d.) Personal Data Protection. Available at: https://www.perpaduan.gov.my/index.php/en/services/other-services/e-participation/personal-data-protection (Accessed: 30 October 2026).
 
-OWASP Foundation (n.d.-a) Authorization Cheat Sheet. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html (Accessed: 25 October 2026).
+National Institute of Standards and Technology (NIST) (2025) Digital Identity Guidelines Authentication and Authenticator Management. SP 800-63B-4. Available at: https://pages.nist.gov/800-63-4/sp800-63b.html (Accessed: 30 October 2026).
 
-OWASP Foundation (n.d.-b) Business Logic Security Cheat Sheet. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Business_Logic_Security_Cheat_Sheet.html (Accessed: 25 October 2026).
+OWASP Foundation (2025) OWASP Top 10 2025. Available at: https://top10.owasp.org/2025/ (Accessed: 30 October 2026).
 
-OWASP Foundation (n.d.-c) Logging Cheat Sheet. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html (Accessed: 25 October 2026).
+OWASP Foundation (n.d.-a) Authorization Cheat Sheet. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html (Accessed: 30 October 2026).
 
-OWASP Foundation (n.d.-d) Transaction Authorization Cheat Sheet. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Transaction_Authorization_Cheat_Sheet.html (Accessed: 25 October 2026).
+OWASP Foundation (n.d.-b) Logging Cheat Sheet. Available at: https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html (Accessed: 30 October 2026).
 
-OWASP Foundation (n.d.-e) Web Security Testing Guide. Available at: https://owasp.org/projects/web-security-testing-guide (Accessed: 25 October 2026).
+PyOTP (n.d.) The Python One-Time Password Library. Available at: https://pyotp.readthedocs.io/en/stable/ (Accessed: 30 October 2026).
 
-Python Cryptographic Authority (n.d.) Fernet symmetric encryption. Available at: https://cryptography.io/en/latest/fernet/ (Accessed: 25 October 2026).
+Python Cryptographic Authority (n.d.) Fernet symmetric encryption. Available at: https://cryptography.io/en/stable/fernet/ (Accessed: 30 October 2026).
 
-Saltzer, J.H. and Schroeder, M.D. (1975) The protection of information in computer systems. Proceedings of the IEEE, 63(9), pp. 1278-1308. Available at: https://web.mit.edu/Saltzer/www/publications/protection/ (Accessed: 25 October 2026).
+Saltzer, J.H. and Schroeder, M.D. (1975) The protection of information in computer systems. Proceedings of the IEEE, 63(9), pp. 1278-1308. Available at: https://web.mit.edu/Saltzer/www/publications/protection/Basic.html (Accessed: 30 October 2026).
 
 ## 7.0 Appendix
 
-The extracts below are from core/services.py in the examined repository version, with line breaks adjusted for readability. They illustrate checks discussed in Section 3.5; the complete function and transaction remain necessary to understand the control.
+### 7.1 Collection Code Consumption
 
-### 7.1 Collection Code Generation
-
-```python
-if (
-    not actor.is_authenticated or not actor.is_active
-    or claim.claimant_id != actor.pk
-):
-    raise WorkflowError(
-        "Only the approved claimant can generate a collection code.",
-        403
-    )
-if claim.status != Claim.Status.APPROVED:
-    raise WorkflowError(
-        "A collection code requires an approved, uncollected claim."
-    )
-```
-
-### 7.2 Collection Code Validation
+The following extract is from core/services.py at the application baseline. It consumes only a matching, unused and unexpired authorisation. The surrounding transaction also updates custody states and the audit event.
 
 ```python
 changed = CollectionGrant.objects.filter(
@@ -253,10 +278,14 @@ changed = CollectionGrant.objects.filter(
 if changed != 1:
     raise WorkflowError(
         "The collection code is invalid, expired or already used.",
-        400
+        400,
     )
 ```
 
+### 7.2 Evidence Location and Versions
+
+The local repository retains source, tests and redacted results. The 26 October web/TLS assessment is under docs/security-evidence/; account and data-recovery evidence is under its account-recovery subdirectory. Final 30 October regression, dependency and HTTPS observations are under report-final-2026-10-30. Source fingerprints identify assessed files. Raw credentials, codes, keys and databases remain outside version control.
+
 ### 7.3 Acknowledgement of AI Assistance
 
-OpenAI Codex was used for project planning, application implementation, automated test creation, documentation and preparation and revision of the report. The scope of assistance includes code, technical explanations and document formatting.
+OpenAI Codex assisted with planning, application implementation, test automation, source finding, technical explanation, report drafting and document formatting. The assistance included code and substantive writing. This acknowledgement describes the assistance used and does not replace the official Generative AI Declaration Form.
