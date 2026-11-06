@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-06",
+  "application_baseline": "aaf4b89",
+  "target": "https://localhost:8443",
+  "state": "Separate profile with fictional records",
+  "tls": "Project CA and localhost hostname validated by the HTTPS test client. Chrome rendered the verified responses. No Windows root was added.",
+  "observations": {
+    "password_only_officer": "Redirected to the staff MFA challenge after enrolment",
+    "another_student_claim": "HTTP 404",
+    "officer_audit": "HTTP 403",
+    "first_collection": "HTTP 302 back to the claim, which showed Collected",
+    "collection_replay": "HTTP 409",
+    "administrator_audit": "One authorised handover, with collection.completed and collection.denied for the same fictional claim"
+  },
+  "figures": [
+    {
+      "capture": "01-public-listing.png",
+      "sha256": "d5dea1b1e50c3186af4d9cb8478e6f33360c61e99580dbe272b9afedd6044891"
+    },
+    {
+      "capture": "02-mfa-challenge.png",
+      "sha256": "f3e30f0165b9cf4c7baba09a2818718d683a72ce0a42a239fc690931fde9537d"
+    },
+    {
+      "capture": "03-student-claim.png",
+      "sha256": "4860172824dba63994328a1a43602bbb0499a8a1678674af8d219b3d38ea9bbb"
+    },
+    {
+      "capture": "04-completed-handover.png",
+      "sha256": "ec047689f568ab7bf45af0f1648ac563dc489bfb385b2770098e4edc94bf351a"
+    },
+    {
+      "capture": "05-admin-audit.png",
+      "sha256": "75d667aaecd63eef36eb5bb714b04f3327f3d0478ec53730b30faf2edba88b3f"
+    }
+  ]
+}
