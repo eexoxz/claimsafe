@@ -3,18 +3,20 @@ import time
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
 from .crypto import decrypt_text, encrypt_text
 from .account_security import needs_mfa, security_state
-from .forms import ClaimForm, CollectionForm, ItemForm, LoginForm, RegistrationForm, ReviewForm
+from .forms import ClaimForm, CollectionForm, ItemForm, RegistrationForm, ReviewForm
 from .models import AuditEvent, Claim, FoundItem, User
 from .services import WorkflowError, collect_item, issue_collection_code, record, review_claim, submit_claim, throttle
 
@@ -64,7 +66,6 @@ def home(request):
         "items": Paginator(items, 9).get_page(request.GET.get("page")), "query": query,
         "category": category, "categories": FoundItem.Category.choices,
         "open_count": FoundItem.objects.filter(status=FoundItem.Status.AVAILABLE).count(),
-        "returned_count": FoundItem.objects.filter(status=FoundItem.Status.RETURNED).count(),
     })
 
 
@@ -78,14 +79,19 @@ def register(request):
             record(None, "registration.throttled", outcome="denied")
             return failure(request, 429, "Too many registration attempts. Please try again later.")
         if form.is_valid():
+            user = form.save(commit=False)
+            user.role = User.Role.STUDENT
             with transaction.atomic():
-                user = form.save(commit=False)
-                user.role = User.Role.STUDENT
-                user.email = form.cleaned_data["email"]
-                user.save()
-                record(user, "account.registered")
-            messages.success(request, "Your student account is ready. You can now sign in.")
-            return redirect("login")
+                # Initial form validation happened before hashing the password.
+                # Recheck inside the write transaction before inserting the account.
+                if User.objects.filter(Q(username__iexact=user.username) | Q(email__iexact=user.email)).exists():
+                    form.add_error(None, "That username or email is unavailable. Use different details or sign in.")
+                else:
+                    user.save()
+                    record(user, "account.registered")
+            if not form.errors:
+                messages.success(request, "Your student account is ready. You can now sign in.")
+                return redirect("login")
     return render(request, "form.html", {"form": form, "eyebrow": "YOUR CAMPUS ACCOUNT", "title": "A safer way back to your belongings.", "intro": "Create a student account to submit and track private ownership claims.", "submit_label": "Create account", "kind": "register"})
 
 
@@ -93,16 +99,18 @@ def register(request):
 def sign_in(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
-    form = LoginForm(request, data=request.POST or None)
+    form = AuthenticationForm(request, data=request.POST or None)
     if request.method == "POST":
         ip_ok = throttle("login-ip", request.META.get("REMOTE_ADDR", "unknown"), 30)
-        account_ok = ip_ok and throttle("login-account", request.POST.get("username", "")[:150].strip().casefold(), 5)
+        identity = form.fields["username"].to_python(request.POST.get("username", "")[:150]).casefold()
+        account_ok = ip_ok and throttle("login-account", identity, 5)
         if not ip_ok or not account_ok:
             record(None, "auth.throttled", outcome="denied")
             return failure(request, 429, "Too many sign-in attempts. Please wait 15 minutes before trying again.")
         if form.is_valid():
             login(request, form.get_user())
             request.session["authenticated_at"] = time.time()
+            request.session["session_version"] = request.user.session_version
             state = security_state(request.user)
             if needs_mfa(request.user, state):
                 record(request.user, "auth.password_verified")
@@ -130,11 +138,13 @@ def sign_out(request):
 def dashboard(request):
     claims = Claim.objects.filter(claimant=request.user).select_related("item")
     events = AuditEvent.objects.filter(actor=request.user)[:6]
+    counts = claims.aggregate(
+        pending_count=Count("pk", filter=Q(status=Claim.Status.PENDING)),
+        approved_count=Count("pk", filter=Q(status=Claim.Status.APPROVED)),
+        collected_count=Count("pk", filter=Q(status=Claim.Status.COLLECTED)),
+    )
     return render(request, "dashboard.html", {
-        "claims": Paginator(claims, 10).get_page(request.GET.get("page")), "events": events,
-        "pending_count": claims.filter(status=Claim.Status.PENDING).count(),
-        "approved_count": claims.filter(status=Claim.Status.APPROVED).count(),
-        "collected_count": claims.filter(status=Claim.Status.COLLECTED).count(),
+        "claims": Paginator(claims, 10).get_page(request.GET.get("page")), "events": events, **counts,
     })
 
 
@@ -266,11 +276,13 @@ def staff_queue(request):
     if status not in Claim.Status.values:
         status = "pending"
     claims = Claim.objects.filter(status=status).select_related("item", "claimant")
+    counts = Claim.objects.filter(status__in=[Claim.Status.PENDING, Claim.Status.APPROVED]).aggregate(
+        pending_count=Count("pk", filter=Q(status=Claim.Status.PENDING)),
+        approved_count=Count("pk", filter=Q(status=Claim.Status.APPROVED)),
+    )
     return render(request, "staff_queue.html", {
         "claims": Paginator(claims, 15).get_page(request.GET.get("page")), "status": status,
-        "statuses": Claim.Status.choices,
-        "pending_count": Claim.objects.filter(status=Claim.Status.PENDING).count(),
-        "approved_count": Claim.objects.filter(status=Claim.Status.APPROVED).count(),
+        "statuses": Claim.Status.choices, **counts,
         "returned_count": FoundItem.objects.filter(status=FoundItem.Status.RETURNED).count(),
     })
 
@@ -294,24 +306,31 @@ def audit_dashboard(request):
 @login_required
 def users(request):
     admin_only(request)
-    return render(request, "users.html", {"accounts": User.objects.order_by("username")})
+    accounts = User.objects.order_by("username")
+    return render(request, "users.html", {"accounts": Paginator(accounts, 25).get_page(request.GET.get("page"))})
 
 
 @require_POST
 @login_required
 def toggle_user(request, pk):
     admin_only(request)
-    target = get_object_or_404(User, pk=pk)
-    if target.pk == request.user.pk or target.role == User.Role.ADMIN:
-        denied(request, "account.change_denied", target.pk)
+    desired = {"0": False, "1": True}.get(request.POST.get("active"))
     with transaction.atomic():
         target = get_object_or_404(User, pk=pk)
-        # Role elevation is CLI-only. The transaction serialises account updates.
-        target.is_active = not target.is_active
-        target.save(update_fields=["is_active"])
-        record(request.user, "account.activated" if target.is_active else "account.deactivated", target.pk)
+        protected = target.role == User.Role.ADMIN or target.pk == request.user.pk
+        if not protected and desired is not None and target.is_active != desired:
+            target.is_active = desired
+            # Reactivation also invalidates sessions from before this field existed.
+            target.session_version += 1
+            target.save(update_fields=["is_active", "session_version"])
+            record(request.user, "account.activated" if desired else "account.deactivated", target.pk)
+    if protected:
+        denied(request, "account.change_denied", target.pk)
+    if desired is None:
+        return failure(request, 400, "Refresh the accounts page and choose whether to activate or deactivate this account.")
     messages.success(request, "Account access updated.")
-    return redirect("users")
+    page = request.GET.get("page")
+    return redirect(reverse("users", query={"page": page}) if page else "users")
 
 
 @require_http_methods(["GET"])

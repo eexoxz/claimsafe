@@ -4,6 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from threading import Barrier
+from unittest.mock import patch
 
 from cryptography.fernet import InvalidToken
 from django.conf import settings
@@ -13,6 +14,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .crypto import decrypt_text, encrypt_text
+from .forms import RegistrationForm
 from .models import AccountSecurity, AuditEvent, Claim, CollectionGrant, FoundItem, RateBucket, User
 from .services import WorkflowError, collect_item, issue_collection_code, review_claim, submit_claim, throttle
 
@@ -379,16 +381,74 @@ class SecurityWorkflowTests(TestCase):
 
     def test_administrator_can_deactivate_a_student_and_record_the_action(self):
         self.sign_in_as(self.admin)
-        self.assertEqual(self.client.post(reverse("toggle_user", args=[self.jamie.pk])).status_code, 302)
+        self.assertEqual(self.client.post(reverse("toggle_user", args=[self.jamie.pk]), {"active": "0"}).status_code, 302)
         self.jamie.refresh_from_db()
         self.assertFalse(self.jamie.is_active)
         self.assertTrue(AuditEvent.objects.filter(action="account.deactivated", actor=self.admin).exists())
+
+    def test_reactivation_does_not_restore_an_old_session(self):
+        self.sign_in_as(self.admin)
+        for user, legacy in [(self.jamie, False), (self.alex, True)]:
+            with self.subTest(legacy=legacy):
+                previous = self.sign_in_as(user, Client())
+                url = reverse("toggle_user", args=[user.pk])
+                if legacy:
+                    User.objects.filter(pk=user.pk).update(is_active=False)
+                else:
+                    self.assertRedirects(self.client.post(url, {"active": "0"}), reverse("users"))
+                self.assertRedirects(self.client.post(url, {"active": "1"}), reverse("users"))
+                self.assertRedirects(previous.get(reverse("dashboard")), reverse("login"))
+                response = previous.post(reverse("login"), {"username": user.username, "password": PASSWORD})
+                self.assertRedirects(response, reverse("dashboard"))
+
+    def test_repeating_deactivation_does_not_reactivate_account(self):
+        self.sign_in_as(self.admin)
+        url = reverse("toggle_user", args=[self.jamie.pk])
+        for _ in range(2):
+            self.assertEqual(self.client.post(url, {"active": "0"}).status_code, 302)
+        self.jamie.refresh_from_db()
+        self.assertFalse(self.jamie.is_active)
+        self.assertEqual(AuditEvent.objects.filter(action="account.deactivated", target=str(self.jamie.pk)).count(), 1)
+
+    def test_login_throttle_groups_equivalent_unicode_usernames(self):
+        url = reverse("login")
+        for username in ("alex", "ａｌｅｘ", "alex", "ａｌｅｘ", "alex"):
+            self.assertEqual(self.client.post(url, {"username": username, "password": "wrong"}).status_code, 200)
+        self.assertEqual(self.client.post(url, {"username": "ａｌｅｘ", "password": PASSWORD}).status_code, 429)
 
     @override_settings(DEBUG=False)
     def test_missing_page_does_not_disclose_tracebacks(self):
         response = self.client.get("/not-a-real-page/")
         self.assertEqual(response.status_code, 404)
         self.assertNotContains(response, "Traceback", status_code=404)
+
+
+class ConcurrentRegistrationTests(TransactionTestCase):
+    def test_concurrent_case_variants_cannot_register_twice(self):
+        barrier = Barrier(2)
+        validate = RegistrationForm.is_valid
+
+        def synchronised_validation(form):
+            valid = validate(form)
+            if valid:
+                barrier.wait(timeout=15)
+            return valid
+
+        def register(username):
+            close_old_connections()
+            try:
+                return Client().post(reverse("register"), {
+                    "username": username, "email": f"entry-{ord(username[0])}@example.test",
+                    "password1": PASSWORD, "password2": PASSWORD, "privacy_acknowledged": "on",
+                }).status_code
+            finally:
+                close_old_connections()
+
+        with patch.object(RegistrationForm, "is_valid", synchronised_validation):
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                responses = list(executor.map(register, ["CampusAccount", "campusaccount"]))
+        self.assertCountEqual(responses, [200, 302])
+        self.assertEqual(User.objects.filter(username__iexact="campusaccount").count(), 1)
 
 
 class ConcurrentHandoverTests(TransactionTestCase):

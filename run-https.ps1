@@ -44,7 +44,21 @@ try {
     foreach ($port in @(8080,8443,9010)) {
         if (Get-NetTCPConnection -State Listen -LocalPort $port -ErrorAction SilentlyContinue) { throw "Port $port is already in use. No existing process was stopped." }
     }
-    $backendProcess = Start-Process -FilePath (Join-Path $PSScriptRoot '.venv\Scripts\python.exe') -ArgumentList 'scripts/serve_https_backend.py' -WorkingDirectory $PSScriptRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $stateDirectory 'logs\backend.out.log') -RedirectStandardError (Join-Path $stateDirectory 'logs\backend.err.log')
+    $backendOut = Join-Path $stateDirectory 'logs\backend.out.log'
+    $backendError = Join-Path $stateDirectory 'logs\backend.err.log'
+    $backendProcess = Start-Process -FilePath (Join-Path $PSScriptRoot '.venv\Scripts\python.exe') -ArgumentList 'scripts/serve_https_backend.py' -WorkingDirectory $PSScriptRoot -WindowStyle Hidden -PassThru -RedirectStandardOutput $backendOut -RedirectStandardError $backendError
+    $startup = [Diagnostics.Stopwatch]::StartNew()
+    $ready = $false
+    while (!$backendProcess.HasExited -and $startup.Elapsed.TotalSeconds -lt 15) {
+        if (Select-String -LiteralPath $backendOut -Pattern '^ClaimSafe backend ready$' -Quiet -ErrorAction SilentlyContinue) {
+            $ready = $true
+            break
+        }
+        Start-Sleep -Milliseconds 100
+    }
+    if (!$ready -or $backendProcess.HasExited) {
+        throw "ClaimSafe's backend could not start. Check $backendError for details."
+    }
     Write-Host 'ClaimSafe HTTPS: https://localhost:8443 (loopback only)'
     Write-Host "Local CA: $stateDirectory\tls\pki\authorities\local\root.crt"
     Write-Host 'No certificate was installed into Windows or browser trust stores.'

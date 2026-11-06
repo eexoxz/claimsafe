@@ -10,7 +10,8 @@ from django import forms
 from django.contrib import messages
 from django.contrib.auth import logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm, UsernameField
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
@@ -40,7 +41,7 @@ class ChangePasswordForm(PasswordChangeForm):
 
 
 class AccountRecoveryForm(SetPasswordForm):
-    username = forms.CharField(max_length=150)
+    username = UsernameField(max_length=150)
     recovery_code = forms.CharField(label="Saved recovery code", max_length=80, widget=forms.TextInput(attrs={"autocomplete": "off", "spellcheck": "false"}))
     field_order = ["username", "recovery_code", "new_password1", "new_password2"]
 
@@ -190,20 +191,27 @@ def password_change(request):
 @require_http_methods(["GET", "POST"])
 @secure_account_page
 def account_recovery(request):
-    # All users see the same form and completion message. An email address alone
+    # Invalid codes and unknown accounts get the same response. An email address alone
     # never authorises a reset, and recovery cannot reactivate a suspended account.
     form = AccountRecoveryForm(None, request.POST or None)
     if request.method == "POST":
-        identity = request.POST.get("username", "")[:150].strip().casefold()
+        identity = form.fields["username"].to_python(request.POST.get("username", "")[:150]).casefold()
         if limited(request, "account.recovery", identity):
             return failure(request, 429, "Too many recovery attempts. Wait five minutes before trying again.")
-        user = User.objects.filter(username__iexact=identity).first()
-        form = AccountRecoveryForm(user, request.POST)
         if form.is_valid():
-            recovered = recover_account(user, form.cleaned_data["recovery_code"], form.cleaned_data["new_password1"])
-            if recovered:
-                logout(request)
+            username = form.cleaned_data["username"]
+            user = User.objects.filter(username=username).first()
+            if user is None:
+                matches = list(User.objects.filter(username__iexact=username)[:2])
+                user = matches[0] if len(matches) == 1 else None
+            try:
+                recovered = recover_account(user, form.cleaned_data["recovery_code"], form.cleaned_data["new_password1"])
+            except ValidationError as error:
+                form.add_error("new_password2", error)
             else:
-                record(None, "account.recovery_failed", outcome="denied")
-            return render(request, "recovery_done.html")
+                if recovered:
+                    logout(request)
+                else:
+                    record(None, "account.recovery_failed", outcome="denied")
+                return render(request, "recovery_done.html")
     return render(request, "form.html", {"form": form, "eyebrow": "ACCOUNT RECOVERY", "title": "Get back into your account.", "intro": "Use a saved recovery code to set a new password. This replaces authenticator setup and invalidates your other recovery codes. If no code is available, contact the local operator.", "submit_label": "Recover account", "kind": "account"})

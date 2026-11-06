@@ -188,6 +188,28 @@ class AccountSecurityTests(TestCase):
             self.assertContains(response, "If the username and saved recovery code were valid")
         self.assertEqual(bodies, [False, False])
 
+    def test_recovery_prefers_the_exact_unicode_username(self):
+        user = User.objects.create_user("Straße", "unicode@example.test", PASSWORD)
+        User.objects.create_user("strasse", "other@example.test", PASSWORD)
+        _, codes = replace_recovery_codes(user, PASSWORD)
+        self.client.post(reverse("account_recovery"), {"username": "Straße",
+            "recovery_code": codes[0], "new_password1": NEW_PASSWORD, "new_password2": NEW_PASSWORD}, secure=True)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password(NEW_PASSWORD))
+
+    def test_recovery_keeps_account_specific_validation_private_until_code_is_valid(self):
+        password = self.student.email + "!"
+        for username in (self.student.username, "not_an_account"):
+            response = self.client.post(reverse("account_recovery"), {"username": username,
+                "recovery_code": "a" * 32, "new_password1": password, "new_password2": password}, secure=True)
+            self.assertContains(response, "If the username and saved recovery code were valid")
+
+        _, codes = replace_recovery_codes(self.student, PASSWORD)
+        response = self.client.post(reverse("account_recovery"), {"username": self.student.username,
+            "recovery_code": codes[0], "new_password1": password, "new_password2": password}, secure=True)
+        self.assertTrue(response.context["form"].has_error("new_password2", "password_too_similar"))
+        self.assertTrue(recover_account(self.student, codes[0], NEW_PASSWORD))
+
     def test_recovery_rejects_weak_new_password_without_consuming_saved_code(self):
         _, codes = replace_recovery_codes(self.student, PASSWORD)
         response = self.client.post(reverse("account_recovery"), {"username": self.student.username,

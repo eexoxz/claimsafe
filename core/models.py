@@ -13,6 +13,7 @@ class User(AbstractUser):
 
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=12, choices=Role.choices, default=Role.STUDENT)
+    session_version = models.PositiveIntegerField(default=0, editable=False)
 
     @property
     def is_officer(self):

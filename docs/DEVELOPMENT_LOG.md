@@ -173,3 +173,24 @@ explanation, while the FYP supplies only font, justification and neat layout. Ch
 three supplied security PDFs for an abstract heading; none was found. Removed the abstract
 from the source and builder, refreshed the contents/preliminary numbering and exported the
 matching 20-page Word/PDF pair. Main-report text and its technical evidence remain unchanged.
+
+### 2026-11-07 final code review
+
+The six regression checks reproduced old sessions returning after reactivation, repeated
+deactivation requests reversing the first action, simultaneous registrations accepting
+two case variants, equivalent Unicode names using separate sign-in counters, and two
+recovery problems. Account status requests now specify the intended state and invalidate
+old sessions. Registration rechecks uniqueness inside the write transaction. Recovery uses
+the entered username for lookup and applies account-specific password checks after verifying
+the saved code.
+
+Dashboard counts use fewer queries and the administrator list displays 25 accounts at a time.
+The HTTPS launcher waits for the backend to bind before starting Caddy. The development
+launcher detects pending migrations and points to the existing setup command.
+
+All 89 tests passed on the final code. A live loopback check upgraded the earlier fictional
+demo database and preserved four users, six items and two claims. The first verified TLS
+request returned 200, the plain HTTP listener redirected, a direct backend request was
+denied, and the existing student could sign in and see their claim. The test supplied the
+project CA to its own TLS context. The report describes the earlier assessed application and
+the dated walkthrough.

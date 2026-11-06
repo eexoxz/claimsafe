@@ -13,7 +13,8 @@ class SessionBoundaryMiddleware:
     def __call__(self, request):
         if request.user.is_authenticated:
             started = request.session.get("authenticated_at")
-            if not started or time.time() - started > settings.SESSION_ABSOLUTE_SECONDS:
+            if (not started or time.time() - started > settings.SESSION_ABSOLUTE_SECONDS
+                    or request.session.get("session_version", 0) != request.user.session_version):
                 logout(request)
                 return redirect("login")
         return self.get_response(request)

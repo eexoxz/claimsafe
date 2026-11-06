@@ -7,14 +7,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 from django.conf import settings
-from waitress import serve
+from waitress import create_server
 from config.proxy import ProxyGuard
 from config.wsgi import application
 
 if not settings.PRODUCTION:
     raise SystemExit("Use run-https.ps1 to supply the secure deployment configuration.")
 
-serve(
+server = create_server(
     ProxyGuard(application, settings.LOCAL_SECRETS.get("proxy_token")),
     listen="127.0.0.1:9010",
     threads=4,
@@ -29,3 +29,5 @@ serve(
     expose_tracebacks=False,
     ident="ClaimSafe",
 )
+print("ClaimSafe backend ready", flush=True)
+server.run()

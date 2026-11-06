@@ -6,6 +6,7 @@ import time
 from datetime import timedelta
 
 import pyotp
+from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from django.utils import timezone
 
@@ -179,6 +180,8 @@ def recover_account(user, code, password):
         user = User.objects.get(pk=user.pk)
         if not user.is_active or not _consume_recovery(user, code):
             return False
+        # An invalid password rolls back consumption of the saved code.
+        validate_password(password, user)
         user.set_password(password)
         user.save(update_fields=["password"])
         state = security_state(user)

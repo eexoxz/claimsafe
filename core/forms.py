@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 
 from .models import FoundItem, User
@@ -18,16 +18,6 @@ class RegistrationForm(UserCreationForm):
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This address cannot be used. Choose another address or sign in.")
         return email
-
-    def clean_username(self):
-        username = super().clean_username()
-        if User.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError("This username is unavailable.")
-        return username
-
-
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(max_length=150)
 
 
 class ItemForm(forms.ModelForm):
