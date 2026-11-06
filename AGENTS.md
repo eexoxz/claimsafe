@@ -33,3 +33,8 @@
   ownership steps to the user; provide precise screenshot instructions where capture is blocked.
 - At handoff, briefly state what changed, what was checked, the local commit identifier,
   and how to run or access the result when relevant.
+- The active coursework report is `C:\Users\USER\Downloads\6005CEM\ClaimSafe Report.docx`.
+  Make future report edits in that file and keep its filename. Earlier report exports and
+  sources in the workspace are snapshots. Do not update them in parallel or make additional
+  draft copies unless the user asks. Export a PDF from the active report when preparing the
+  submission.
