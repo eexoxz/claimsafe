@@ -1,0 +1,118 @@
+{
+  "date": "2026-11-11",
+  "time_zone": "Asia/Kuala_Lumpur",
+  "application_revision": "4b70f5c3900d5b4bc97e4a8b5eae174a4e465d1e",
+  "environment": "Windows x64, Python 3.12, Django 5.2.18, Caddy 2.11.7, Waitress 3.0.2, SQLite",
+  "regression": {
+    "tests": 89,
+    "elapsed_seconds": 51.458,
+    "result": "OK",
+    "system_check_issues": 0
+  },
+  "account_checks": {
+    "target": "https://localhost:8443",
+    "tls_validation": "Project CA, hostname and validity verified by requests; no bypass",
+    "method": "Selected scripted HTTPS requests using disposable fictional actors; not independent user testing or a complete penetration test",
+    "checks": [
+      {
+        "case": "staff_password_alone_cannot_open_desk",
+        "result": "passed"
+      },
+      {
+        "case": "staff_password_alone_cannot_read_private_item",
+        "result": "passed"
+      },
+      {
+        "case": "authenticator_setup_rejects_missing_csrf",
+        "result": "passed"
+      },
+      {
+        "case": "authenticator_enrolment_opens_staff_desk",
+        "result": "passed"
+      },
+      {
+        "case": "account_security_response_is_not_cacheable",
+        "result": "passed"
+      },
+      {
+        "case": "recovery_codes_not_redisplayed_on_security_page",
+        "result": "passed"
+      },
+      {
+        "case": "verified_officer_cannot_open_administrator_audit",
+        "result": "passed"
+      },
+      {
+        "case": "enrolment_totp_cannot_be_replayed_for_sign_in",
+        "result": "passed"
+      },
+      {
+        "case": "fresh_totp_completes_real_https_sign_in",
+        "result": "passed"
+      },
+      {
+        "case": "consumed_totp_cannot_open_another_session",
+        "result": "passed"
+      },
+      {
+        "case": "saved_recovery_code_completes_second_factor",
+        "result": "passed"
+      },
+      {
+        "case": "consumed_recovery_code_cannot_be_replayed",
+        "result": "passed"
+      },
+      {
+        "case": "verified_administrator_can_open_audit",
+        "result": "passed"
+      },
+      {
+        "case": "other_student_cannot_open_owner_claim",
+        "result": "passed"
+      },
+      {
+        "case": "student_can_save_recovery_codes_without_enrolling_mfa",
+        "result": "passed"
+      },
+      {
+        "case": "password_change_keeps_current_session_and_revokes_other_session",
+        "result": "passed"
+      },
+      {
+        "case": "saved_code_account_recovery_revokes_old_browser_session",
+        "result": "passed"
+      },
+      {
+        "case": "recovered_student_can_sign_in_with_new_password",
+        "result": "passed"
+      },
+      {
+        "case": "live_wsgi_profile_lease_blocks_offline_backup",
+        "result": "passed"
+      }
+    ]
+  },
+  "deployment_checks": {
+    "https_headers": 200,
+    "http_redirect": 308,
+    "unexpected_host": 421,
+    "direct_backend_without_credential": 404
+  },
+  "https_response_headers_checked": [
+    "Content-Security-Policy",
+    "Strict-Transport-Security",
+    "X-Content-Type-Options",
+    "Referrer-Policy"
+  ],
+  "default_demo_workflow": [
+    "Fresh setup and normal HTTPS launch",
+    "New fictional claim",
+    "Cross-account claim request returned 404",
+    "Officer authenticator enrolment",
+    "Claim approved",
+    "Handover completed",
+    "Replay returned 409",
+    "Restricted administrator audit recorded the results"
+  ],
+  "scope": "Disposable checkouts and fictional accounts. The HTTPS clients validated the local CA and localhost hostname. Browser certificate settings were not modified. The earlier ZAP and SSLyze assessments were not rerun."
+}
