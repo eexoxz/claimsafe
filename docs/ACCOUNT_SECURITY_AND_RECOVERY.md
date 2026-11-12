@@ -14,8 +14,7 @@ Officers and administrators must enrol an authenticator before opening applicati
 After password sign-in, confirm the password, scan the locally generated QR code with an
 authenticator you control, and enter its six-digit time-based code. Save the ten recovery
 codes privately outside the browser. Students may enable the same factor under **Account
-security**, or save recovery codes without enabling an authenticator. Existing local/demo
-staff factors have deliberately not been enrolled on the user's behalf.
+security**, or save recovery codes without enabling an authenticator.
 
 Setup lasts ten minutes and is bound to the browser session that started it. The database
 holds encrypted setup secrets and a digest of the pending session handle. No external QR
@@ -134,8 +133,8 @@ trusted operator control of containing directories is assumed.
 
 These use the profile selected by Django's environment. Only expired sessions/rate windows
 and expired pending MFA setups are removed. Live factors, unused recovery codes, evidence,
-claims and audit history remain. HTTPS preparation also runs cleanup. No scheduled task
-or general personal-data deletion policy was invented.
+claims and audit history remain. HTTPS preparation also runs cleanup. To prune a profile
+while it stays running, run the command periodically against that profile.
 
 References: [PyOTP](https://pyotp.readthedocs.io/en/stable/),
 [Django password/session behaviour](https://docs.djangoproject.com/en/5.2/topics/auth/default/#session-invalidation-on-password-change),

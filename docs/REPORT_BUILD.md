@@ -36,5 +36,5 @@ The exporter writes those statistics to a companion `.layout.json` file.
 The report covers application baseline `aaf4b89`. It uses the retained 30 October
 83-test regression run, 19 HTTPS account checks and dependency audit, and distinguishes
 those from the earlier web and TLS scans. The two interface captures are from the
-25 October fictional walkthrough. See [the handoff](SUBMISSION_HANDOFF.md) for current
-browser captures, the Turnitin screenshot and the official AI declaration.
+25 October fictional walkthrough. See the [user manual](USER_MANUAL.md) for the current
+demo steps.

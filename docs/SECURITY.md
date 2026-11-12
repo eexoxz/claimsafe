@@ -1,4 +1,4 @@
-# Security design and evidence boundaries
+# Security design
 
 Account MFA, saved-code recovery and offline backup/key maintenance are detailed in
 [Account security and recovery](ACCOUNT_SECURITY_AND_RECOVERY.md), with current results
@@ -100,14 +100,14 @@ Before deployment beyond this machine:
 7. Verify certificate hostname/trust/expiry, HTTPS redirection, cookie flags, TLS configuration
    and HTTP traffic behaviour with appropriate tools. Capture actual results.
 
-## Known limitations / next assessment work
+## Known limitations
 
 - No automated ownership verification. Officer judgement, insider honesty and physical checks remain necessary.
-- No MFA, email verification, password-reset delivery, user-facing password change or notification email yet.
+- Email verification and notification email are unavailable. Password recovery uses saved codes.
 - Registration can reveal username/address availability. Throttling reduces but does not eliminate abuse.
 - Fixed-window throttles can inconvenience legitimate users and do not provide distributed DDoS protection.
-- Add periodic deletion of expired rate buckets and a researched, documented data-retention/deletion policy.
-- No tamper-evident external log storage, alerting, backup restoration exercise or key rotation workflow yet.
+- HTTPS startup prunes expired security state. General personal-data retention and deletion still require an operator policy.
+- Audit events are stored locally. External tamper-evident storage and alerting are unavailable.
 - No upload handling; no claim of malware scanning or attachment security.
 - A bounded manual request assessment, anonymous ZAP scan, TLS scan, static analysis and
   before/after installed-dependency audit have been completed. Their exact scope and findings
