@@ -6,11 +6,7 @@ Later account security and recovery changes are documented in
 under `security-evidence/account-recovery/`. References below to absent MFA/backup/rotation
 describe that earlier revision. Do not treat its test count or hashes as the current build.
 
-These are development evidence notes, separate from the frozen assignment report. The report
-at 29b2bde has not been edited or regenerated. The new application source and evidence hashes
-are recorded in `security-evidence/manifest.json`; the local commit identifies the completed
-change. Tests used fictional records in an isolated HTTPS profile and did not alter the
-earlier demonstration database.
+Tests used fictional records in an isolated HTTPS profile. Source hashes and results are recorded in `security-evidence/manifest.json`.
 
 ## Scope and method
 
@@ -171,6 +167,4 @@ under `docs/security-evidence/`; `security/export_evidence.py` exports them usin
 interpreter. The collector expects the recorded filenames and separately captured host ACL
 observations. An assessment should be reviewed before replacing those evidence files.
 
-Public hosting, browser trust installation, a dedicated service identity, MFA, protected
-backup recovery, rotation, retention/deletion and independent audit protection remain future
-work. No GitHub push or public deployment was performed. The assignment report remains frozen.
+See [account security and recovery](ACCOUNT_SECURITY_AND_RECOVERY.md) and the [11 November verification results](security-evidence/final-https-2026-11-11.json) for checks on later versions.

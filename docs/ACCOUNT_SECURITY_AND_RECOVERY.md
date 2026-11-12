@@ -2,7 +2,7 @@
 
 This work follows the local HTTPS assessment at commit `5339995`. New evidence is in
 `security-evidence/account-recovery/`. Older evidence describes its recorded revision,
-not the current account flows. The assignment report remains frozen.
+not the current account flows.
 
 ## Use your own authenticator
 
