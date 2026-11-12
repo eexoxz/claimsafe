@@ -3,6 +3,8 @@
 A secure campus lost-property claim and collection application. Built as an original
 6000CMD / 6005CEM coursework project, with a local Git history and evidence-led development.
 
+Start with the [user manual](docs/USER_MANUAL.md) to set up the HTTPS demo and walk through a claim.
+
 ## The problem
 
 An item must be discoverable without publishing the details someone could use to make a
