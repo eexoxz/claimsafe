@@ -134,7 +134,7 @@ def mfa_challenge(request):
             return redirect(landing(request.user))
         record(request.user, "mfa.failed", outcome="denied")
         form.add_error(None, "Use a fresh authenticator code or an unused recovery code. Each code is accepted once.")
-    return render(request, "form.html", {"form": form, "eyebrow": "VERIFY YOUR SIGN IN", "title": "One more check.", "intro": "Open your authenticator app, or use a saved recovery code.", "submit_label": "Verify sign in", "kind": "mfa"})
+    return render(request, "form.html", {"form": form, "title": "Verify your sign-in", "intro": "Use a fresh code from your authenticator app or an unused recovery code.", "submit_label": "Verify sign in", "kind": "mfa"})
 
 
 @require_http_methods(["GET", "POST"])
@@ -185,7 +185,7 @@ def password_change(request):
                 update_session_auth_hash(request, user)
                 messages.success(request, "Password changed. Other signed-in sessions will need to sign in again.")
                 return redirect("account_security")
-    return render(request, "form.html", {"form": form, "eyebrow": "ACCOUNT SECURITY", "title": "Change your password.", "intro": "Confirm your current password and choose a new password of at least fifteen characters.", "submit_label": "Change password", "kind": "account"})
+    return render(request, "form.html", {"form": form, "title": "Change password", "intro": "Use at least 15 characters for your new password.", "submit_label": "Change password", "kind": "account"})
 
 
 @require_http_methods(["GET", "POST"])
@@ -214,4 +214,4 @@ def account_recovery(request):
                 else:
                     record(None, "account.recovery_failed", outcome="denied")
                 return render(request, "recovery_done.html")
-    return render(request, "form.html", {"form": form, "eyebrow": "ACCOUNT RECOVERY", "title": "Get back into your account.", "intro": "Use a saved recovery code to set a new password. This replaces authenticator setup and invalidates your other recovery codes. If no code is available, contact the local operator.", "submit_label": "Recover account", "kind": "account"})
+    return render(request, "form.html", {"form": form, "title": "Recover account", "intro": "Use a saved code to reset your password and authenticator. Recovery invalidates your other codes. If you have no codes, contact the local operator.", "submit_label": "Recover account", "kind": "account"})

@@ -92,7 +92,7 @@ def register(request):
             if not form.errors:
                 messages.success(request, "Your student account is ready. You can now sign in.")
                 return redirect("login")
-    return render(request, "form.html", {"form": form, "eyebrow": "YOUR CAMPUS ACCOUNT", "title": "A safer way back to your belongings.", "intro": "Create a student account to submit and track private ownership claims.", "submit_label": "Create account", "kind": "register"})
+    return render(request, "form.html", {"form": form, "title": "Create a student account", "submit_label": "Create account", "kind": "register"})
 
 
 @require_http_methods(["GET", "POST"])
@@ -122,7 +122,7 @@ def sign_in(request):
                 return redirect("staff_queue")
             return redirect("dashboard")
         record(None, "auth.login_failed", outcome="denied")
-    return render(request, "form.html", {"form": form, "eyebrow": "WELCOME BACK", "title": "Your belongings. Your peace of mind.", "intro": "Sign in to follow your claims or manage the campus property desk.", "submit_label": "Sign in", "kind": "login"})
+    return render(request, "form.html", {"form": form, "title": "Sign in", "submit_label": "Sign in", "kind": "login"})
 
 
 @require_POST
@@ -175,7 +175,7 @@ def claim_new(request, pk):
             return failure(request, error.status, str(error))
         messages.success(request, "Your private claim has been sent to the property desk.")
         return redirect("claim_detail", pk=claim.pk)
-    return render(request, "form.html", {"form": form, "title": "Tell us what makes it yours.", "eyebrow": "PRIVATE OWNERSHIP CLAIM", "intro": f"Claiming: {item.title}. Only authorised property staff and you can view your evidence.", "submit_label": "Submit private claim"})
+    return render(request, "form.html", {"form": form, "title": f"Claim {item.title}", "intro": "Only you and authorised property staff can view your evidence.", "submit_label": "Submit private claim"})
 
 
 @require_http_methods(["GET", "POST"])
@@ -192,7 +192,7 @@ def item_new(request):
             record(request.user, "item.recorded", item.id)
         messages.success(request, "Item recorded. Check the public listing for identifying details before sharing it.")
         return redirect("item_detail", pk=item.pk)
-    return render(request, "form.html", {"form": form, "eyebrow": "PROPERTY DESK", "title": "Record a received item.", "intro": "Record items already in staff custody. Separate the public description from private identifying evidence.", "submit_label": "Record item"})
+    return render(request, "form.html", {"form": form, "title": "Record found item", "intro": "Record items already in the property desk’s custody.", "submit_label": "Record item"})
 
 
 def claim_context(request, claim, token=None):

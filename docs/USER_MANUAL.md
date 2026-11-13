@@ -41,7 +41,7 @@ Open the file printed after **Fictional credentials** in PowerShell. It is `.loc
 
 Keep `alex` in the regular Firefox demo window. Open a private window from the same demo profile for `officer`. Use that private window for `admin` after signing out as `officer`.
 
-On the first sign-in as `officer` or `admin`, enter the **Current password** again and choose **Create setup key**. Scan the QR code with your authenticator, enter its six-digit code and select **Confirm authenticator**. Save the recovery codes privately and select **I have saved the codes**. On later sign-ins, enter a fresh six-digit code on the **One more check** screen.
+On the first sign-in as `officer` or `admin`, enter the **Current password** again and choose **Create setup key**. Scan the QR code with your authenticator, enter its six-digit code and select **Confirm authenticator**. Save the recovery codes privately and select **I have saved the codes**. On later sign-ins, enter a fresh six-digit code on the **Verify your sign-in** screen.
 
 ## Walk through a claim
 
