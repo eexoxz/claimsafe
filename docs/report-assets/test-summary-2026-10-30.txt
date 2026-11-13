@@ -1,7 +1,0 @@
-ClaimSafe final regression verification
-Date: 30 October 2026
-Command: .venv/Scripts/python.exe manage.py test --noinput
-Ran 83 tests in 41.767s
-OK
-System check identified no issues.
-Timing is not a performance benchmark.
